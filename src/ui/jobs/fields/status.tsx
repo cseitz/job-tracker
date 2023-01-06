@@ -23,7 +23,11 @@ type StatusSelectItem = SelectItem & { value: JobData['status'], color: MantineC
 const INTERVIEW_STATUSES = ([
     { value: 'pending', label: 'Pending', color: 'grey', icon: PendingIcon, },
     { value: 'rejected', label: 'Rejected', color: 'red.6', icon: RejectedIcon },
-    { value: 'interview', label: 'Interview', color: 'orange.5', icon: InterviewIcon },
+    { value: 'interview', label: 'Interview', color: 'teal.6', icon: InterviewIcon },
+
+    { value: 'offered', label: 'Recieved Offer', color: 'green.5', icon: OfferedIcon },
+    { value: 'accepted', label: 'Accepted Offer', color: 'lime.6', icon: AcceptedIcon },
+    { value: 'declined', label: 'Declined Offer', color: 'red', icon: DeclinedIcon },
 ] as const) satisfies readonly StatusSelectItem[];
 
 const OFFER_STATUSES = ([
@@ -38,7 +42,7 @@ const StatusItem = forwardRef<HTMLDivElement, StatusSelectItem>(
         const Icon = icon;
         return <div ref={ref} {...rest}>
             <Group>
-                <Icon color={color} />
+                <Icon color={color} sx={{ width: 26 }} />
                 <Text>{label}</Text>
             </Group>
         </div>
