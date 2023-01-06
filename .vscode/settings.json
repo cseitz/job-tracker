@@ -1,0 +1,57 @@
+{
+    "vsicons.associations.folders": [
+        { "icon": "middleware", "extensions": ["staff"] },
+        { "icon": "typescript", "extensions": ["tsconfig", "trpc"] },
+        { "icon": "binary", "extensions": ["constants"] },
+        { "icon": "images", "extensions": ["media"] },
+        { "icon": "sso", "extensions": ["authentication", "auth"] },
+        { "icon": "server", "extensions": ["backend"] },
+        { "icon": "e2e", "extensions": ["socket"] },
+        { "icon": "view", "extensions": ["contents"] },
+        { "icon": "package", "extensions": ["projects"] },
+        { "icon": "app", "extensions": ["web"] },
+        { "icon": "client", "extensions": ["website"] },
+        { "icon": "github", "extensions": ["github"] },
+        { "icon": "node", "extensions": ["npm"] },
+        { "icon": "electron", "extensions": ["react"] },
+        { "icon": "log", "extensions": [".github/workflows"] },
+    ],
+    "vsicons.associations.files": [
+        { "icon": "nginx", "extensions": [".github/server/nginx/*"] },
+        { "icon": "tsconfig", "extensions": [
+            "tsconfig/tsconfig.base.json",
+            "tsconfig/tsconfig.next.json",
+            "tsconfig/tsconfig.node.json",
+            "tsconfig/tsconfig.react.json"
+        ], "filename": true },
+        {
+            "icon": "tsconfig",
+            "extensions": ["src/config.ts"],
+            "filename": true
+        },
+    ],
+    "files.associations": {
+        "**/nginx/**/*.template": "nginx",
+        "**/nginx/includes/**": "nginx",
+        "**/nginx/sites-enabled/**": "nginx",
+        "**/.env.local": "env",
+    },
+    "typescript.preferences.importModuleSpecifierEnding": "minimal",
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "**/Thumbs.db": true,
+        "**/node_modules": true,
+        "**/package-lock.json": true,
+        "**/yarn.lock": true,
+        "**/.next": true,
+        "**/.swc": true,
+        "**/next-env.d.ts": true,
+        "**/.turbo": true,
+        "**/build": true,
+        "**/dist": true,
+    },
+}
