@@ -1,6 +1,6 @@
 import { createColumnHelper, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table';
 import { api } from '../../utils/trpc';
-import { Button, Group, Table } from '@mantine/core';
+import { Button, Group, Table, TableProps, Text, Tooltip } from '@mantine/core';
 import { JobData } from '../../backend/data/models/job';
 import { JobField } from './fields';
 import { DatePicker, TimeInput } from '@mantine/dates';
@@ -41,22 +41,28 @@ const columns = [
         size: 200,
         cell(props) {
             const job = props.row.original;
-            return <Group sx={{ width: props.column.columnDef.size || undefined }}>
-                <DatePicker value={job.updated} variant='unstyled' readOnly sx={{ flexShrink: 1, width: 100 }} />
-                <TimeInput format='12' pmLabel='PM' amLabel='AM' value={job.updated}  variant='unstyled' />
-            </Group>
+            return <Tooltip label={job.updated.toLocaleString()}>
+                <Text sx={{ width: props.column.columnDef.size || undefined }}>
+                    {new Intl.DateTimeFormat('en', { dateStyle: 'long', timeStyle: 'short' }).format(job.updated)}
+                </Text>
+            </Tooltip>
+            // return <Group sx={{ width: props.column.columnDef.size || undefined }}>
+            //     <DatePicker value={job.updated} variant='unstyled' readOnly sx={{ flexShrink: 1, width: 100 }} />
+            //     <TimeInput format='12' pmLabel='PM' amLabel='AM' value={job.updated}  variant='unstyled' />
+            // </Group>
         },
     })
 ];
 
-export function JobTable() {
+export function JobTable(props: Partial<TableProps>) {
+    const { ...rest } = props;
     const query = api.jobs.list.useQuery();
     const table = useReactTable({
         getCoreRowModel: getCoreRowModel(),
         data: query.data?.jobs || [],
         columns,
     })
-    return <Table>
+    return <Table {...rest}>
         <thead>
             {table.getHeaderGroups().map(headerGroup => (
                 <tr key={headerGroup.id}>

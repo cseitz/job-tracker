@@ -2,6 +2,7 @@ import { DatePicker, DatePickerProps } from '@mantine/dates';
 import { JobData } from '../../../backend/data/models/job';
 import { useIsMobile } from '../../../hooks';
 import { api } from '../../../utils/trpc';
+import { Tooltip } from '@mantine/core';
 
 
 
@@ -16,11 +17,13 @@ function Applied(props: Partial<DatePickerProps> & { job: JobData }) {
             utils.jobs.list.invalidate();
         },
     })
-    return <DatePicker value={applied} withinPortal variant='unstyled'
-        clearable={false} dropdownType={isMobile ? 'modal' : 'popover'}
-        onChange={(value) => {
-            updateJob({ id, applied: value! })
-        }} {...rest} />
+    return <Tooltip label={applied.toLocaleDateString()}>
+        <DatePicker value={applied} withinPortal variant='unstyled'
+            clearable={false} dropdownType={isMobile ? 'modal' : 'popover'}
+            onChange={(value) => {
+                updateJob({ id, applied: value! })
+            }} {...rest} />
+    </Tooltip>
 }
 
 export default {

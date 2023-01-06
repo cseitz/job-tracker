@@ -2,7 +2,7 @@ import { DatePicker } from '@mantine/dates';
 import { JobData } from '../../../backend/data/models/job';
 import { useIsMobile, useProps } from '../../../hooks';
 import { api } from '../../../utils/trpc';
-import { ActionIcon, Group, GroupProps, TextInput, Tooltip } from '@mantine/core';
+import { ActionIcon, Group, GroupProps, Popover, TextInput, Tooltip } from '@mantine/core';
 import { Icon } from '@cseitz/icons';
 import { faCheck } from '@cseitz/icons-regular/check';
 import { faClose } from '@cseitz/icons-regular/close';
@@ -32,11 +32,33 @@ function EditableText(props: Partial<GroupProps> & { job: JobData, field: String
             utils.jobs.list.invalidate();
         },
     })
-    
+
+    return <Popover opened={value !== input} position='right'>
+        <Popover.Target>
+            <TextInput value={input} onInput={(event) => {
+                setInput((event.target as any).value);
+            }} variant='unstyled' sx={{ flexGrow: 1, paddingRight: value === input ? 0 : 0 }} />
+        </Popover.Target>
+        <Popover.Dropdown p={0}>
+            <Group spacing={0} sx={{ justifyContent: 'center' }}>
+                <Tooltip label='Save Changes'>
+                    <ActionIcon onClick={() => updateJob({ id, [props.field]: input })}>
+                        <SaveChangesIcon />
+                    </ActionIcon>
+                </Tooltip>
+                <Tooltip label='Cancel'>
+                    <ActionIcon onClick={() => setInput(value)}>
+                        <CancelChangesIcon />
+                    </ActionIcon>
+                </Tooltip>
+            </Group>
+        </Popover.Dropdown>
+    </Popover>
+
     return <Group {...args}>
         <TextInput value={input} onInput={(event) => {
             setInput((event.target as any).value);
-        }} variant='unstyled' sx={{ flexGrow: 1, paddingRight: value === input ? 56 : 0 }} />
+        }} variant='unstyled' sx={{ flexGrow: 1, paddingRight: value === input ? 0 : 0 }} />
         {value !== input && <Group spacing={0} sx={{ width: 56 }}>
             <Tooltip label='Save Changes'>
                 <ActionIcon onClick={() => updateJob({ id, [props.field]: input })}>
