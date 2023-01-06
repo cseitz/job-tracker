@@ -62,12 +62,14 @@ function Status(props: Partial<SelectProps> & { job: JobData }) {
     return <Select
         data={data}
         value={status}
-        icon={Icon && <Icon color={color} />}
         variant='unstyled'
+        icon={Icon && <Icon color={color} />}
+        itemComponent={StatusItem}
+        rightSection={<span />}
+        rightSectionWidth={0}
         onChange={(value: any) => {
             updateJob({ id: id, status: value })
         }}
-        itemComponent={StatusItem}
         styles={(theme) => ({
             input: {
                 color,
