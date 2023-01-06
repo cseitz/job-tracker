@@ -27,9 +27,9 @@ const INTERVIEW_STATUSES = ([
 ] as const) satisfies readonly StatusSelectItem[];
 
 const OFFER_STATUSES = ([
-    { value: 'offered', label: 'Recieved Offer', color: 'green.5', icon: OfferedIcon },
-    { value: 'accepted', label: 'Accepted Offer', color: 'lime.6', icon: AcceptedIcon },
-    { value: 'declined', label: 'Declined Offer', color: 'red', icon: DeclinedIcon },
+    { value: 'offered', label: 'Offered', color: 'green.5', icon: OfferedIcon },
+    { value: 'accepted', label: 'Accepted', color: 'lime.6', icon: AcceptedIcon },
+    { value: 'declined', label: 'Declined', color: 'red', icon: DeclinedIcon },
 ] as const) satisfies readonly StatusSelectItem[];
 
 const StatusItem = forwardRef<HTMLDivElement, StatusSelectItem>(
