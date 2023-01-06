@@ -59,13 +59,21 @@ function Status(props: Partial<SelectProps> & { job: JobData }) {
     })
     const [color] = useColors([entry.color]);
     const Icon = entry.icon;
-    return <Select data={data} value={status} icon={Icon && <Icon color={color} />} variant='unstyled' onChange={(value: any) => {
-        updateJob({ id: id, status: value })
-    }} itemComponent={StatusItem} styles={(theme) => ({
-        input: {
-            color,
-        }
-    })} {...rest} />
+    return <Select
+        data={data}
+        value={status}
+        icon={Icon && <Icon color={color} />}
+        variant='unstyled'
+        onChange={(value: any) => {
+            updateJob({ id: id, status: value })
+        }}
+        itemComponent={StatusItem}
+        styles={(theme) => ({
+            input: {
+                color,
+            }
+        })}
+        {...rest} />
 }
 
 
