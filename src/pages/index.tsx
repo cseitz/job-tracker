@@ -22,7 +22,7 @@ export default function Homepage() {
             <JobTable sx={{ minWidth: 800 }} />
         </Box>
         <Affix position={{ bottom: '1.5em', right: '1.5em' }}>
-            <Button leftIcon={<PlusIcon />} size='md'>Add Job</Button>
+            <Button leftIcon={<PlusIcon />} size='md' radius='lg'>Add Job</Button>
         </Affix>
     </Box>
 }
