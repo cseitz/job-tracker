@@ -24,15 +24,11 @@ const INTERVIEW_STATUSES = ([
     { value: 'pending', label: 'Pending', color: 'grey', icon: PendingIcon, },
     { value: 'rejected', label: 'Rejected', color: 'red.6', icon: RejectedIcon },
     { value: 'interview', label: 'Interview', color: 'teal.6', icon: InterviewIcon },
-
-    { value: 'offered', label: 'Recieved Offer', color: 'green.5', icon: OfferedIcon },
-    { value: 'accepted', label: 'Accepted Offer', color: 'lime.6', icon: AcceptedIcon },
-    { value: 'declined', label: 'Declined Offer', color: 'red', icon: DeclinedIcon },
 ] as const) satisfies readonly StatusSelectItem[];
 
 const OFFER_STATUSES = ([
-    { value: 'offered', label: 'Recieved Offer', color: 'green', icon: OfferedIcon },
-    { value: 'accepted', label: 'Accepted Offer', color: 'green', icon: AcceptedIcon },
+    { value: 'offered', label: 'Recieved Offer', color: 'green.5', icon: OfferedIcon },
+    { value: 'accepted', label: 'Accepted Offer', color: 'lime.6', icon: AcceptedIcon },
     { value: 'declined', label: 'Declined Offer', color: 'red', icon: DeclinedIcon },
 ] as const) satisfies readonly StatusSelectItem[];
 
