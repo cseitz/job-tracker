@@ -7,6 +7,10 @@ import { z } from 'zod';
 export type JobData = z.infer<typeof jobData>;
 export const jobData = modelData.extend({
     title: z.string(),
+    company: z.string(),
+    applied: z.date().default(new Date()),
+    status: z.enum(['pending', 'rejected', 'interview', 'offered', 'accepted', 'declined']).default('pending'),
+    offer: z.string().optional(),
 })
 
 
@@ -37,5 +41,26 @@ export const jobProcedures = router({
             const job = await doc.save();
             return { job }
         }),
+
+    update: procedure
+        .input(jobData.pick({ id: true }).merge(jobData.omit({ id: true, created: true, updated: true }).partial()))
+        .mutation(async ({ input }) => {
+            await db.ready;
+            const doc = new Job(input.id);
+            for (const key in input) {
+                if (key == 'id') {}
+                else {
+                    doc.set(key as any, input[key]);
+                }
+            }
+            const job = await doc.save();
+            return { job }
+        }),
+
+    remove: procedure
+        .input(jobData.pick({ id: true }))
+        .mutation(async ({ input }) => {
+
+        })
 })
 

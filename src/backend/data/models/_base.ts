@@ -8,6 +8,7 @@ export const baseModelData = z.object({
     id: z.number(),
     updated: z.date(),
     created: z.date(),
+    deleted: z.date().optional().nullable(),
 })
 
 export const modelData = baseModelData;
@@ -58,12 +59,18 @@ class BaseModel<Config extends ModelConfig, Data extends BaseModelData = z.infer
             increment = true;
         }
         this.data.updated = new Date();
+        // @ts-ignore
+        // this.data.applied = new Date();
         const result = schema?.parse(this.data);
         if (result) {
             if (increment) {
                 result.id = ++db.data.indexes[collection];
             }
-            db.data[collection].push(result);
+            if (db.data[collection].find(o => o.id === result.id)) {
+                Object.assign(db.data[collection], result);
+            } else {
+                db.data[collection].push(result);
+            }
             db.save();
             return result as any;
         }
@@ -77,13 +84,25 @@ class BaseModel<Config extends ModelConfig, Data extends BaseModelData = z.infer
     set<K extends Exclude<FieldPath<Data>, 'created' | 'updated'>>(field: K, value: FieldPathValue<Data, K>): Data {
         return set(this.data, field, value) as any;
     }
+
+    async delete() {
+        this.data.deleted = new Date();
+        return Boolean(await this.save());
+    }
+
+    async undo(action: 'delete') {
+        if (action === 'delete') {
+            delete this.data.deleted;
+            return Boolean(await this.save());
+        }
+    }
 }
 
 export function Model<Config extends ModelConfig>(config: Config) {
     // @ts-ignore
     type Data = z.infer<Config['schema']>;
     return class extends BaseModel<Config> {
-        constructor(id: string) // @ts-ignore
+        constructor(id: number) // @ts-ignore
         constructor(data: Omit<Data, keyof BaseModelData>)
         constructor(input) {
             super(config, input);
@@ -91,14 +110,16 @@ export function Model<Config extends ModelConfig>(config: Config) {
 
         static async findOne(filter?: (doc: Data) => boolean): Promise<Data | null> {
             await db.ready;
-            const results = db.data?.[config.collection] || [];
+            let results = db.data?.[config.collection] || [];
+            results = results.filter(o => !o.deleted);
             if (filter) return results.find(filter) || null;
             return results.find(o => true) || null;
         }
 
         static async find(filter?: (doc: Data) => boolean): Promise<Data[]> {
             await db.ready;
-            const results = db.data?.[config.collection] || [];
+            let results = db.data?.[config.collection] || [];
+            results = results.filter(o => !o.deleted);
             if (filter) return results.filter(filter);
             return results;
         }

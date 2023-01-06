@@ -1,4 +1,4 @@
-import { httpBatchLink } from '@trpc/client';
+import { httpBatchLink, httpLink } from '@trpc/client';
 import { createTRPCNext } from '@trpc/next';
 import type { ApiRouter } from '../backend/trpc';
 import SuperJSON from 'superjson';
@@ -20,14 +20,17 @@ function getBaseUrl() {
 
 
 export const trpc = createTRPCNext<ApiRouter>({
-    ssr: true,
+    ssr: false,
     config({ ctx }) {
         return {
             transformer: SuperJSON,
             links: [
-                httpBatchLink({
+                httpLink({
                     url: `${getBaseUrl()}/api/trpc`
-                })
+                }),
+                // httpBatchLink({
+                //     url: `${getBaseUrl()}/api/trpc`
+                // })
             ]
         }
     },
