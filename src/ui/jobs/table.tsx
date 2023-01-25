@@ -12,19 +12,21 @@ const columns = [
 
     }),
     c.accessor('company', {
+        size: 100,
         cell(props) {
             const job = props.row.original;
-            return <JobField.EditableText field='company' {...{ job }} />
+            return <JobField.EditableText field='company' {...{ job }} sx={{ width: props.column.columnDef.size || undefined }} />
         },
     }),
     c.accessor('title', {
+        size: 200,
         cell(props) {
             const job = props.row.original;
-            return <JobField.EditableText field='title' {...{ job }} />
+            return <JobField.EditableText field='title' {...{ job }} sx={{ width: props.column.columnDef.size || undefined }} />
         },
     }),
     c.accessor('status', {
-        size: 250,
+        size: 300,
         cell(props) {
             const job = props.row.original;
             return <JobField.Status {...{ job }} sx={{ width: props.column.columnDef.size || undefined }} />

@@ -37,7 +37,7 @@ function EditableText(props: Partial<GroupProps> & { job: JobData, field: String
         <Popover.Target>
             <TextInput value={input} onInput={(event) => {
                 setInput((event.target as any).value);
-            }} variant='unstyled' sx={{ flexGrow: 1, paddingRight: value === input ? 0 : 0 }} />
+            }} variant='unstyled' sx={{ flexGrow: 1, paddingRight: value === input ? 0 : 0 }} {...rest} />
         </Popover.Target>
         <Popover.Dropdown p={0}>
             <Group spacing={0} sx={{ justifyContent: 'center' }}>

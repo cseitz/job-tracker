@@ -1,5 +1,5 @@
-import { jobProcedures } from '../data/models/job';
 import { procedure, router } from '../trpc';
+import { jobProcedures } from './models/jobs';
 
 
 export type ApiRouter = typeof apiRouter;

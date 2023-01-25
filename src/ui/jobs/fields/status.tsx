@@ -45,6 +45,8 @@ const StatusItem = forwardRef<HTMLDivElement, StatusSelectItem>(
     }
 );
 
+const DAY = 24 * 60 * 60 * 1000;
+
 function Status(props: Partial<SelectProps> & { job: JobData }) {
     const { job, ...rest } = props;
     const { id, status, offer } = props.job;
@@ -59,14 +61,17 @@ function Status(props: Partial<SelectProps> & { job: JobData }) {
     })
     const [color] = useColors([entry.color]);
     const Icon = entry.icon;
+    const daysAgo = Math.floor((new Date().getTime() - job.updated.getTime()) / DAY);
     return <Select
         data={data}
         value={status}
         variant='unstyled'
         icon={Icon && <Icon color={color} />}
         itemComponent={StatusItem}
-        rightSection={<span />}
-        rightSectionWidth={0}
+        rightSection={<Text c='dimmed'>{daysAgo === 0 ? 'today' : `${daysAgo} day${daysAgo > 1 ? 's' : ''} ago`}</Text>}
+        rightSectionWidth={100}
+        // rightSection={<span />}
+        // rightSectionWidth={0}
         onChange={(value: any) => {
             updateJob({ id: id, status: value })
         }}
