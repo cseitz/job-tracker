@@ -20,6 +20,7 @@ export class SuperJSONFile<T> implements Adapter<T> {
     }
 
     write(obj: T): Promise<void> {
-        return this.adapter.write(SuperJSON.stringify(obj))
+        const serialized = SuperJSON.serialize(obj);
+        return this.adapter.write(JSON.stringify(serialized, null, 2))
     }
 }
