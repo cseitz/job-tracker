@@ -2,10 +2,10 @@ import { Affix, Box, Button, Input, Table, TextInput } from '@mantine/core';
 import { api } from '../utils/trpc';
 import { useState } from 'react';
 import { useReactTable } from '@tanstack/react-table';
-import { JobTable } from '../ui/jobs/table';
+import { JobTable } from '../ui/old-jobs/table';
 import { Icon } from '@cseitz/icons';
 import { faPlus } from '@cseitz/icons-regular/plus';
-import { CreateJobModal, createJob } from '../ui/jobs/create';
+import { CreateJobModal, createJob } from '../ui/old-jobs/create';
 
 const PlusIcon = Icon(faPlus);
 
