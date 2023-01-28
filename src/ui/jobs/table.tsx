@@ -39,21 +39,17 @@ const columns = [
             return <JobField.Applied {...{ job }} sx={{ width: props.column.columnDef.size || undefined }} />
         },
     }),
-    c.accessor('updated', {
-        size: 200,
-        cell(props) {
-            const job = props.row.original;
-            return <Tooltip label={job.updated.toLocaleString()}>
-                <Text sx={{ width: props.column.columnDef.size || undefined }}>
-                    {new Intl.DateTimeFormat('en', { dateStyle: 'long', timeStyle: 'short' }).format(job.updated)}
-                </Text>
-            </Tooltip>
-            // return <Group sx={{ width: props.column.columnDef.size || undefined }}>
-            //     <DatePicker value={job.updated} variant='unstyled' readOnly sx={{ flexShrink: 1, width: 100 }} />
-            //     <TimeInput format='12' pmLabel='PM' amLabel='AM' value={job.updated}  variant='unstyled' />
-            // </Group>
-        },
-    })
+    // c.accessor('updated', {
+    //     size: 200,
+    //     cell(props) {
+    //         const job = props.row.original;
+    //         return <Tooltip label={job.updated.toLocaleString()}>
+    //             <Text sx={{ width: props.column.columnDef.size || undefined }}>
+    //                 {new Intl.DateTimeFormat('en', { dateStyle: 'long', timeStyle: 'short' }).format(job.updated)}
+    //             </Text>
+    //         </Tooltip>
+    //     },
+    // })
 ];
 
 export function JobTable(props: Partial<TableProps>) {

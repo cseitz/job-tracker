@@ -68,6 +68,7 @@ function Status(props: Partial<SelectProps> & { job: JobData }) {
         variant='unstyled'
         icon={Icon && <Icon color={color} />}
         itemComponent={StatusItem}
+        rightSectionProps={{ style: { justifyContent: 'left' } }}
         rightSection={<Text c='dimmed'>{daysAgo === 0 ? 'today' : `${daysAgo} day${daysAgo > 1 ? 's' : ''} ago`}</Text>}
         rightSectionWidth={100}
         // rightSection={<span />}
