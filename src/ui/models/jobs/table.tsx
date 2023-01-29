@@ -1,9 +1,9 @@
 import { createColumnHelper, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
 import { JobData } from '../../../backend/data/models/job';
-import { ActionIcon, Box, Menu, Table, TableProps } from '@mantine/core';
+import { ActionIcon, Box, Global, Group, Menu, Paper, Table, TableProps } from '@mantine/core';
 import { JobField } from './fields';
 import { onlyIf } from '../../../utils/mantine';
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
 import { NoSSR } from '../../../utils/ssr';
 import { Icon } from '@cseitz/icons';
 import { faCaretDown } from '@cseitz/icons-regular/caret-down';
@@ -12,6 +12,8 @@ import { faEllipsis } from '@cseitz/icons-regular/ellipsis';
 import { faTrash } from '@cseitz/icons-regular/trash';
 import { faPencil } from '@cseitz/icons-regular/pencil';
 import { Job } from './modal';
+import { useElementSize, useIntersection, useWindowScroll } from '@mantine/hooks';
+import { PaperProps } from '@mantine/core';
 
 const SortDescendingIcon = Icon(faCaretDown);
 const SortAscendingIcon = Icon(faCaretUp);
@@ -33,18 +35,43 @@ export const jobTableColumns = {
     title: c.accessor('title', {
         minSize: 200,
     }),
-    status: c.accessor('status', {
-        size: 300,
-        cell(props) {
-            const job = props.row.original;
-            return <JobField.Status {...{ job }} sx={{ width: props.column.columnDef.size || undefined }} />
-        },
-    }),
     applied: c.accessor('applied', {
         minSize: 100,
+        maxSize: 180,
         cell(props) {
             const job = props.row.original;
-            return <JobField.Applied {...{ job }} sx={{ width: props.column.columnDef.size || undefined }} />
+            return <JobField.Applied {...{ job }} sx={{
+                width: props.column.columnDef.size,
+                minWidth: props.column.columnDef.minSize,
+                maxWidth: props.column.columnDef.maxSize,
+            }} />
+        },
+    }),
+    status: c.accessor('status', {
+        // size: 300,
+        // minSize: 200,
+        // size: 300,
+        // minSize: 200,
+        // maxSize: 300,
+        cell(props) {
+            const job = props.row.original;
+            return <JobField.Status {...{ job }} sx={{
+                // width: props.column.columnDef.size,
+                // minWidth: props.column.columnDef.minSize,
+                // maxWidth: props.column.columnDef.maxSize,
+            }} />
+        },
+    }),
+    updated: c.accessor('updated', {
+        size: 100,
+        cell(props) {
+            const job = props.row.original;
+            return <Group sx={{ justifyContent: 'space-between' }}>
+                <JobField.Updated {...{ job }} sx={{ width: props.column.columnDef.size || undefined }} />
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                    <JobOptionsMenu job={props.cell.row.original} />
+                </Box>
+            </Group>
         },
     }),
 }
@@ -54,12 +81,14 @@ const allColumns = Object.keys(jobTableColumns);
 export function JobTable(props: Partial<TableProps> & {
     jobs: JobData[],
     columns?: JobTableColumns[],
+    affix?: boolean | TableAffixOptions,
 }) {
     const {
         jobs,
         columns = allColumns,
         ...rest
     } = props;
+
     const table = useReactTable({
         getCoreRowModel: getCoreRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
@@ -68,73 +97,117 @@ export function JobTable(props: Partial<TableProps> & {
         data: jobs,
     })
 
-    // useEffect(() => {
-    // }, [table.getState().columnFilters[0]?.id])
 
+    const { ref: headerRef, width } = useElementSize();
 
-    return <Table {...rest}>
-        <thead>
-            {table.getHeaderGroups().map(headerGroup => (
-                <tr key={headerGroup.id}>
-                    {headerGroup.headers.map(header => (
-                        <th key={header.id} {...{
-                            onClick: header.column.getToggleSortingHandler(),
-                            style: onlyIf(header.column.getCanSort(), {
-                                userSelect: 'none',
-                                cursor: 'pointer',
-                            }),
-                        }}>
-                            {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                            <Box pl={'xs'} display={'inline-block'} sx={{ position: 'absolute' }}>
-                                {{
-                                    asc: <SortAscendingIcon />,
-                                    desc: <SortDescendingIcon />
-                                }[header.column.getIsSorted() as string] ?? null}
-                            </Box>
-                        </th>
-                    ))}
-                    <th />
-                </tr>
+    const headers = table.getHeaderGroups().map(headerGroup => (
+        <tr key={headerGroup.id}>
+            {headerGroup.headers.map(header => (
+                <th key={header.id} {...{
+                    onClick: header.column.getToggleSortingHandler(),
+                    style: onlyIf(header.column.getCanSort(), {
+                        userSelect: 'none',
+                        cursor: 'pointer',
+                    }),
+                }}>
+                    {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                    <Box pl={'xs'} display={'inline-block'} sx={{ position: 'absolute' }}>
+                        {{
+                            asc: <SortAscendingIcon />,
+                            desc: <SortDescendingIcon />
+                        }[header.column.getIsSorted() as string] ?? null}
+                    </Box>
+                </th>
             ))}
-        </thead>
-        <tbody>
-            {table.getRowModel().rows.map(row => (
-                <tr key={row.id} onDoubleClick={() => openJob(row.original)}>
-                    {row.getVisibleCells().map(cell => (
-                        <td key={cell.id}>
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                        </td>
-                    ))}
-                    <td>
-                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                            <JobOptionsMenu job={row.original} />
-                        </Box>
-                    </td>
-                </tr>
-            ))}
-        </tbody>
-        <tfoot>
-            {table.getFooterGroups().map(footerGroup => (
-                <tr key={footerGroup.id}>
-                    {footerGroup.headers.map(header => (
-                        <th key={header.id}>
-                            {header.isPlaceholder
-                                ? null
-                                : flexRender(
-                                    header.column.columnDef.footer,
-                                    header.getContext()
-                                )}
-                        </th>
-                    ))}
-                    <th />
-                </tr>
-            ))}
-        </tfoot>
-    </Table>
+        </tr>
+    ));
+
+    return <>
+        {props.affix && <AffixHeader width={width} headerRef={headerRef} columns={props.columns} {...(props.affix === true ? {} : props.affix || {})}>
+            {headers}
+        </AffixHeader>}
+        <Table {...rest}>
+            <thead ref={headerRef}>
+                {headers}
+            </thead>
+            <tbody>
+                {table.getRowModel().rows.map(row => (
+                    <tr key={row.id} onDoubleClick={() => openJob(row.original)}>
+                        {row.getVisibleCells().map(cell => (
+                            <td key={cell.id}>
+                                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            </td>
+                        ))}
+                    </tr>
+                ))}
+            </tbody>
+            {/* <tfoot>
+                {table.getFooterGroups().map(footerGroup => (
+                    <tr key={footerGroup.id}>
+                        {footerGroup.headers.map(header => (
+                            <th key={header.id}>
+                                {header.isPlaceholder
+                                    ? null
+                                    : flexRender(
+                                        header.column.columnDef.footer,
+                                        header.getContext()
+                                    )}
+                            </th>
+                        ))}
+                    </tr>
+                ))}
+            </tfoot> */}
+        </Table>
+    </>
 }
 
 export default JobTable;
 
+
+type TableAffixOptions = {
+    /** Offset from the top of the screen */
+    top?: number
+} & PaperProps;
+
+function AffixHeader(props: { width: number, columns: any, headerRef: any, children: any } & TableAffixOptions) {
+    const { width, columns, children, headerRef, top, ...rest } = props;
+
+    const [scroll] = useWindowScroll();
+
+    const affixHeaderRef = useRef<any>();
+    if (typeof window !== 'undefined') {
+        useLayoutEffect(() => {
+            if (headerRef.current && affixHeaderRef.current) {
+                const cells = headerRef.current.firstChild.children;
+                const widths = [...cells].map(o => o.offsetWidth);
+                [...affixHeaderRef.current.firstChild.children].forEach((o, i) => {
+                    o.style.width = widths[i] + 'px'
+                    o.style.border = 'none';
+                });
+            }
+        }, [width, props.columns, scroll])
+    }
+
+    const isBefore = headerRef?.current?.getBoundingClientRect()?.top > (props.top ?? 4);
+    const isAfter = headerRef?.current?.parentElement?.getBoundingClientRect()?.bottom < ((props.top ?? 4) + 2 * (headerRef?.current?.offsetHeight || 36));
+
+    return <NoSSR>
+        <Paper withBorder {...rest} sx={theme => ({
+            ...((typeof rest.sx === 'function' ? rest.sx(theme) : rest.sx) || {}) as any,
+            position: 'fixed', zIndex: 100, width: width,
+            backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[7] : 'white',
+            top: props.top ?? 4,
+            borderLeft: 'none',
+            borderRight: 'none',
+        })} hidden={isBefore || isAfter}>
+            <Table>
+                <thead ref={affixHeaderRef}>
+                    {children}
+                </thead>
+            </Table>
+        </Paper>
+    </NoSSR>;
+}
 
 function JobOptionsMenu(props: {
     job: JobData

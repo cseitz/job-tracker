@@ -26,7 +26,7 @@ function Applied(props: Partial<DatePickerProps> & { job: JobData }) {
         }} {...rest} />;
 
     return <NoSSR loader={<Box style={{ height: 36 }} {...rest as any} />}>
-        <Tooltip label={applied.toLocaleDateString()}>
+        <Tooltip label={applied.toLocaleDateString()} position='top-start'>
             {picker}
         </Tooltip>
     </NoSSR>

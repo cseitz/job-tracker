@@ -45,10 +45,8 @@ function promptDeleteJob(id: JobData['id']) {
         },
         onConfirm() {
             console.log('do delete job', { job: id });
-            // const context = apiContext().jobs.invalidate();
-            // api.vanilla.jobs.list.
             api.jobs.delete.mutate({ id }).then(() => {
-                apiContext().jobs.invalidate();
+                api.jobs.invalidate();
             })
         },
     })

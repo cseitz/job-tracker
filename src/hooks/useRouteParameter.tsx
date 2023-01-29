@@ -63,20 +63,27 @@ export function createRouteParameter<T, N extends string>(config: {
                     param.setState({ value: qvalue })
                 }
                 if (value !== p.value) {
+                    const enabled = true;
                     // console.log(`value.${config.name}`, 'changed', [p.value, value]);
                     const query = { ...router.query, [config.name]: value };
                     if (value === null || value === undefined) {
                         delete query[config.name];
                         if (config.back) {
-                            router.back();
+                            if (enabled) router.back();
                         } else {
-                            router.push({ query } as any);
+                            if (enabled) router.push({ query } as any, undefined, {
+                                scroll: false,
+                            });
                         }
                     } else {
                         if (router.query?.[config.name]) {
-                            router.replace({ query } as any);
+                            if (enabled) router.replace({ query } as any, undefined, {
+                                scroll: false,
+                            });
                         } else {
-                            router.push({ query } as any);
+                            if (enabled) router.push({ query } as any, undefined, {
+                                scroll: false,
+                            });
                         }
                     }
                 }

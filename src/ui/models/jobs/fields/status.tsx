@@ -55,7 +55,7 @@ const StatusItem = forwardRef<HTMLDivElement, StatusSelectItem>(
     }
 );
 
-const DAY = 24 * 60 * 60 * 1000;
+// const DAY = 24 * 60 * 60 * 1000;
 
 function Status(props: Partial<SelectProps> & { job: JobData }) {
     const { job, ...rest } = props;
@@ -71,11 +71,11 @@ function Status(props: Partial<SelectProps> & { job: JobData }) {
     })
     const [color] = useColors([entry.color]);
     const Icon = entry.icon;
-    const daysAgo = Math.floor((new Date().getTime() - job.updated.getTime()) / DAY);
+    // const daysAgo = Math.floor((new Date().getTime() - job.updated.getTime()) / DAY);
 
-    const updatedAt = <Tooltip label='yeee'>
-        <Text c='dimmed'>{daysAgo === 0 ? 'today' : `${daysAgo} day${daysAgo > 1 ? 's' : ''} ago`}</Text>
-    </Tooltip>;
+    // const updatedAt = <Tooltip label={`Updated on ${job.updated.toLocaleDateString()} at ${job.updated.toLocaleTimeString()}`}>
+    //     <Text c='dimmed'>{daysAgo === 0 ? 'today' : `${daysAgo} day${daysAgo > 1 ? 's' : ''} ago`}</Text>
+    // </Tooltip>;
 
     return <NoSSR loader={<Box style={{ height: 36 }} {...rest as any} />}>
         <Select
@@ -85,10 +85,10 @@ function Status(props: Partial<SelectProps> & { job: JobData }) {
             icon={Icon && <Icon color={color} />}
             itemComponent={StatusItem}
             rightSectionProps={{ style: { justifyContent: 'left' } }}
-            rightSection={updatedAt}
-            rightSectionWidth={100}
             // rightSection={<span />}
             // rightSectionWidth={0}
+            // rightSection={updatedAt}
+            // rightSectionWidth={100}
             onChange={(value: any) => {
                 updateJob({ id: id, status: value })
             }}
