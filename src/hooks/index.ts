@@ -1,4 +1,5 @@
 import { MantineColor, useMantineTheme } from '@mantine/core';
+import { createRouteParameter, RouteParameters } from './useRouteParameter';
 import { useBreakpointValues, useBreakpoint } from './useBreakpoint';
 import { useMediaQuery } from './useMediaQuery';
 import { useProps } from './useProps';
@@ -14,6 +15,8 @@ export {
     useMediaQuery,
     useBreakpoint,
     useBreakpointValues,
+    createRouteParameter,
+    RouteParameters,
 }
 
 

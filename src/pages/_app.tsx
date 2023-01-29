@@ -5,7 +5,9 @@ import { NextParsedUrlQuery } from 'next/dist/server/request-meta';
 import { Router } from 'next/router';
 import { createContext } from 'react';
 import { ThemeProvider } from '../utils/mantine';
-import { trpc } from '../utils/trpc';
+import { ApiContextConsumer, trpc } from '../utils/trpc';
+import { RouteParameters } from 'hooks';
+import { ModalsProvider } from '@mantine/modals';
 
 
 export const InitialRouter = createContext<Router>(null as any);
@@ -21,7 +23,11 @@ function App(props: InitialProps) {
 
     return <ThemeProvider {...{ theme, colorScheme, firstVisit }}>
         <InitialRouter.Provider value={props.router}>
-            <Component {...pageProps} />
+            <ModalsProvider>
+                <ApiContextConsumer />
+                <RouteParameters />
+                <Component {...pageProps} />
+            </ModalsProvider>
         </InitialRouter.Provider>
     </ThemeProvider>
 }

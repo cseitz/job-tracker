@@ -1,7 +1,10 @@
-import { httpBatchLink, httpLink } from '@trpc/client';
+import { createTRPCProxyClient, httpBatchLink, httpLink } from '@trpc/client';
 import { createTRPCNext } from '@trpc/next';
 import type { ApiRouter } from '../backend/trpc';
 import SuperJSON from 'superjson';
+import { create } from 'zustand';
+import { createFlatProxy, createRecursiveProxy } from '@trpc/server/shared';
+import get from 'lodash/get';
 
 
 function getBaseUrl() {
@@ -19,8 +22,8 @@ function getBaseUrl() {
 }
 
 
-export const trpc = createTRPCNext<ApiRouter>({
-    ssr: false,
+export const react = createTRPCNext<ApiRouter>({
+    ssr: true,
     config({ ctx }) {
         return {
             transformer: SuperJSON,
@@ -36,4 +39,40 @@ export const trpc = createTRPCNext<ApiRouter>({
     },
 })
 
-export const api = trpc;
+const vanilla = createTRPCProxyClient<ApiRouter>({
+    transformer: SuperJSON,
+    links: [
+        httpLink({
+            url: `${getBaseUrl()}/api/trpc`
+        }),
+    ]
+})
+
+
+export const useApiContext = create<{ current: ReturnType<typeof api['useContext']> }>(set => ({} as any));
+export const apiContext = () => useApiContext.getState().current;
+
+
+export const trpc = react;
+export const api = createRecursiveProxy(({ path, args }) => {
+    const last = path.slice(-1)[0];
+    if (last.startsWith('use') || path[0].startsWith('use') || path[0] === 'withTRPC') {
+        return get(react, path)(...args);
+    } else if (last === 'query' || last === 'mutate' || last === 'subscribe') {
+        return get(vanilla, path)(...args);
+    } else {
+        console.log('oof', { path, args });
+        return get(apiContext(), path)(...args);
+    }
+}) as typeof react
+    & typeof vanilla
+    & ReturnType<typeof react['useContext']>;
+
+
+export function ApiContextConsumer() {
+    const context = api.useContext();
+    useApiContext.setState({ current: context });
+    return null;
+}
+
+
