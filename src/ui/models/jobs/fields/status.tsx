@@ -56,7 +56,7 @@ const StatusItem = forwardRef<HTMLDivElement, StatusSelectItem>(
 function Status(props: Partial<SelectProps> & { job: JobData, mutate?: boolean }) {
     const { job, mutate, ...rest } = props;
     const { id, status, offer } = props.job;
-    const data = (offer ? OFFER_STATUSES : INTERVIEW_STATUSES) as any;
+    const data = [...OFFER_STATUSES, ...INTERVIEW_STATUSES] as any; //(offer ? OFFER_STATUSES : INTERVIEW_STATUSES) as any;
     const entry = useMemo(() => data.find(o => o.value === (props.value || status)), [status, props?.value]);
     const utils = api.useContext();
     const { mutate: updateJob } = api.jobs.update.useMutation({
