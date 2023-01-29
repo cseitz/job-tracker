@@ -1,6 +1,6 @@
 
 - [x] Affix `+ Add Job` button
-- [ ] Add Job Modal
-- [ ] Delete button on job
-- [ ] Offer button on job
-- [ ] Table Sorting
+- [x] Add Job Modal
+- [x] Delete button on job
+- [x] Offer button on job
+- [x] Table Sorting
