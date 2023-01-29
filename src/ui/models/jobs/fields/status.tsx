@@ -21,13 +21,13 @@ const DeclinedIcon = Icon(faTrash);
 
 
 type StatusSelectItem = SelectItem & { value: JobData['status'], color: MantineColor, icon?: any };
-const INTERVIEW_STATUSES = ([
+export const INTERVIEW_STATUSES = ([
     { value: 'pending', label: 'Pending', color: 'grey', icon: PendingIcon, },
     { value: 'rejected', label: 'Rejected', color: 'red.6', icon: RejectedIcon },
     { value: 'interview', label: 'Interview', color: 'teal.6', icon: InterviewIcon },
 ] as const) satisfies readonly StatusSelectItem[];
 
-const OFFER_STATUSES = ([
+export const OFFER_STATUSES = ([
     { value: 'offered', label: 'Offered', color: 'green.5', icon: OfferedIcon },
     { value: 'accepted', label: 'Accepted', color: 'lime.6', icon: AcceptedIcon },
     { value: 'declined', label: 'Declined', color: 'red', icon: DeclinedIcon },

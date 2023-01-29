@@ -161,7 +161,6 @@ export const Job = Object.assign(new ModelController({
                             } else {
                                 form.setFieldValue('hasOffer', false);
                             }
-                            console.log(form.values)
                             form.getInputProps('offer').onChange(event);
                         }} />}
                     </Grid.Col>
@@ -172,14 +171,16 @@ export const Job = Object.assign(new ModelController({
                 <Grid mt="xl">
                     <Grid.Col span={7}>
                         <Group sx={{ justifyContent: 'left' }}>
-                            <Button type="submit" disabled={mutation.isLoading}>Save Changes</Button>
+                            {isDirty && <Button type="submit" disabled={mutation.isLoading}>Save Changes</Button>}
                             {isDirty && <Button variant='subtle' disabled={mutation.isLoading} onClick={reset}>Discard Changes</Button>}
                         </Group>
                     </Grid.Col>
                     <Grid.Col span={'auto'}>
                         <Group sx={{ justifyContent: 'right' }}>
                             {/* <Button variant='outline' disabled={mutation.isLoading} onClick={reset}>Discard Changes</Button> */}
-                            <Button variant='outline' disabled={mutation.isLoading} onClick={() => Job.close()}>Cancel</Button>
+                            <Button variant='outline' disabled={mutation.isLoading} onClick={() => Job.close()}>
+                                {isDirty ? 'Cancel' : 'Close'}
+                            </Button>
                         </Group>
                     </Grid.Col>
                 </Grid>

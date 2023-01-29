@@ -50,7 +50,7 @@ export function createRouteParameter<T, N extends string>(config: {
                 v = config.type(v as any) as T;
             }
             return v;
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [router.query?.[config.name]]);
         const prev = useRef({ value, qvalue });
         const first = useRef(true);
@@ -69,11 +69,25 @@ export function createRouteParameter<T, N extends string>(config: {
                     if (value === null || value === undefined) {
                         delete query[config.name];
                         if (config.back) {
-                            if (enabled) router.back();
+                            if (enabled) {
+                                if ('pushedRouteParam' in window) {
+                                    router.back();
+                                } else {
+                                    // @ts-ignore
+                                    window.pushedRouteParam = true;
+                                    router.push({ query } as any, undefined, {
+                                        scroll: false,
+                                    });
+                                }
+                            }
                         } else {
-                            if (enabled) router.push({ query } as any, undefined, {
-                                scroll: false,
-                            });
+                            if (enabled) {
+                                // @ts-ignore
+                                window.pushedRouteParam = true;
+                                router.push({ query } as any, undefined, {
+                                    scroll: false,
+                                });
+                            }
                         }
                     } else {
                         if (router.query?.[config.name]) {
@@ -81,15 +95,19 @@ export function createRouteParameter<T, N extends string>(config: {
                                 scroll: false,
                             });
                         } else {
-                            if (enabled) router.push({ query } as any, undefined, {
-                                scroll: false,
-                            });
+                            if (enabled) {
+                                // @ts-ignore
+                                window.pushedRouteParam = true;
+                                router.push({ query } as any, undefined, {
+                                    scroll: false,
+                                });
+                            }
                         }
                     }
                 }
             }
             prev.current = { value, qvalue };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [qvalue, value])
         return <></>;
     }

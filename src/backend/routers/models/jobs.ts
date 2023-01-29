@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { db } from '../../data';
-import { jobData } from '../../data/models/job';
+import { JobData, jobData } from '../../data/models/job';
 import { Job } from '../../models/job';
 import { procedure, router } from '../../trpc';
 
@@ -15,15 +15,20 @@ export const jobProcedures = router({
 
     list: procedure
         .input(z.object({
+            status: jobData.shape.status.optional().nullable(),
             deleted: z.boolean().optional().nullable(),
         }).optional().nullable())
         .query(async ({ input }) => {
+            const filters: ((job: JobData) => boolean)[] = [];
+            const includes: any[] = [];
             if (input?.deleted) {
-                return {
-                    jobs: await Job.find(o => o?.deleted ? true : false, ['deleted']),
-                }
+                filters.push(o => o.deleted ? true : false);
+                includes.push('deleted');
             }
-            const jobs = await Job.find();
+            if (input?.status) {
+                filters.push(o => o.status === input.status);
+            }
+            const jobs = await Job.find(o => !filters.find(c => !c(o)), includes);
             return { jobs }
         }),
 
