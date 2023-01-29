@@ -7,8 +7,8 @@ import { NoSSR } from '../../../../utils/ssr';
 
 
 
-function Applied(props: Partial<DatePickerProps> & { job: JobData }) {
-    const { job, ...rest } = props;
+function Applied(props: Partial<DatePickerProps> & { job: JobData, mutate?: boolean }) {
+    const { job, mutate, ...rest } = props;
     const { id, applied } = props.job;
     const isMobile = useIsMobile();
     const utils = api.useContext();
@@ -22,7 +22,7 @@ function Applied(props: Partial<DatePickerProps> & { job: JobData }) {
     const picker = <DatePicker value={applied} withinPortal variant='unstyled'
         clearable={false} dropdownType={isMobile ? 'modal' : 'popover'}
         onChange={(value) => {
-            updateJob({ id, applied: value! })
+            if (mutate) updateJob({ id, applied: value! });
         }} {...rest} />;
 
     return <NoSSR loader={<Box style={{ height: 36 }} {...rest as any} />}>

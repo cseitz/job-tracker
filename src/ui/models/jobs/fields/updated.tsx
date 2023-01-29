@@ -11,7 +11,7 @@ function Updated(props: Partial<TextProps> & { job: JobData }) {
 
     return <NoSSR>
         <Tooltip label={`Updated on ${job.updated.toLocaleDateString()} at ${job.updated.toLocaleTimeString()}`}>
-            <Text c='dimmed'>{daysAgo === 0 ? 'today' : `${daysAgo} day${daysAgo > 1 ? 's' : ''} ago`}</Text>
+            <Text c='dimmed'>{daysAgo <= 0 ? 'today' : `${daysAgo} day${daysAgo > 1 ? 's' : ''} ago`}</Text>
         </Tooltip>
     </NoSSR>
 }

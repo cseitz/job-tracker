@@ -90,6 +90,9 @@ class BaseModel<Config extends ModelConfig, Data extends BaseModelData = z.infer
     }
 }
 
+
+type FilterExcemption = 'deleted';
+
 export function Model<Config extends ModelConfig>(config: Config) {
     // @ts-ignore
     type Data = z.infer<Config['schema']>;
@@ -100,18 +103,24 @@ export function Model<Config extends ModelConfig>(config: Config) {
             super(config, input);
         }
 
-        static async findOne(filter?: (doc: Data) => boolean): Promise<Data | null> {
+        static async findOne(filter?: (doc: Data) => boolean, include?: FilterExcemption[]): Promise<Data | null> {
             await db.ready;
             let results = db.data?.[config.collection] || [];
-            results = results.filter(o => !o.deleted);
+            include = include || [];
+            if (!include.includes('deleted')) {
+                results = results.filter(o => !o.deleted);
+            }
             if (filter) return results.find(filter) || null;
             return results.find(o => true) || null;
         }
 
-        static async find(filter?: (doc: Data) => boolean): Promise<Data[]> {
+        static async find(filter?: (doc: Data) => boolean, include?: FilterExcemption[]): Promise<Data[]> {
             await db.ready;
             let results = db.data?.[config.collection] || [];
-            results = results.filter(o => !o.deleted);
+            include = include || [];
+            if (!include.includes('deleted')) {
+                results = results.filter(o => !o.deleted);
+            }
             if (filter) return results.filter(filter);
             return results;
         }

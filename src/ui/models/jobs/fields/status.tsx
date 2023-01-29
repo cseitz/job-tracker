@@ -11,15 +11,6 @@ import { faDollarSign } from '@cseitz/icons-regular/dollar-sign';
 import { faHandshake } from '@cseitz/icons-regular/handshake';
 import { faTrash } from '@cseitz/icons-regular/trash';
 import { NoSSR } from '../../../../utils/ssr';
-// import dynamic from 'next/dynamic';
-
-// const Select = dynamic(() => import('@mantine/core').then(o => o.Select), {
-//     ssr: false,
-// })
-
-// const Tooltip = dynamic(() => import('@mantine/core').then(o => o.Tooltip), {
-//     ssr: false,
-// })
 
 const PendingIcon = Icon(faClock);
 const RejectedIcon = Icon(faBan);
@@ -42,6 +33,11 @@ const OFFER_STATUSES = ([
     { value: 'declined', label: 'Declined', color: 'red', icon: DeclinedIcon },
 ] as const) satisfies readonly StatusSelectItem[];
 
+export const JOB_STATUS_COLORS = Object.fromEntries([
+    ...INTERVIEW_STATUSES,
+    ...OFFER_STATUSES,
+].map(o => [o.value, o.color]));
+
 const StatusItem = forwardRef<HTMLDivElement, StatusSelectItem>(
     ({ color: _color, icon, label, ...rest }: StatusSelectItem, ref) => {
         const [color] = useColors([_color]);
@@ -57,11 +53,11 @@ const StatusItem = forwardRef<HTMLDivElement, StatusSelectItem>(
 
 // const DAY = 24 * 60 * 60 * 1000;
 
-function Status(props: Partial<SelectProps> & { job: JobData }) {
-    const { job, ...rest } = props;
+function Status(props: Partial<SelectProps> & { job: JobData, mutate?: boolean }) {
+    const { job, mutate, ...rest } = props;
     const { id, status, offer } = props.job;
     const data = (offer ? OFFER_STATUSES : INTERVIEW_STATUSES) as any;
-    const entry = useMemo(() => data.find(o => o.value === status), [status]);
+    const entry = useMemo(() => data.find(o => o.value === (props.value || status)), [status, props?.value]);
     const utils = api.useContext();
     const { mutate: updateJob } = api.jobs.update.useMutation({
         onSuccess(data, variables, context) {
@@ -90,7 +86,7 @@ function Status(props: Partial<SelectProps> & { job: JobData }) {
             // rightSection={updatedAt}
             // rightSectionWidth={100}
             onChange={(value: any) => {
-                updateJob({ id: id, status: value })
+                if (mutate) updateJob({ id: id, status: value });
             }}
             styles={(theme) => ({
                 input: {

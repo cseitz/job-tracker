@@ -10,6 +10,7 @@ import { createRouteParameter } from 'hooks';
 type ModelControllerConfig = {
     name: string,
     schema: z.AnyZodObject,
+    modal?: Partial<ModalProps>,
 }
 
 type UseModel<Config extends ModelControllerConfig> = {
@@ -51,7 +52,7 @@ export class ModelController<Config extends ModelControllerConfig> {
         // eslint-disable-next-line react/display-name
         this.Modal = (props: Parameters<typeof ControllerModal>[0]) => {
             const modelProps = self.getProps();
-            return <ControllerModal {...props} controller={self} modelProps={modelProps} />
+            return <ControllerModal {...props} controller={self} modelProps={modelProps} {...this.config.modal} />
         }
     }
 
@@ -90,11 +91,16 @@ function ControllerModal<Config extends ModelControllerConfig>(props: {
     const title = controller.config?.title ? controller.config.title(modelProps) : undefined;
 
 
-    return <Modal {...rest} title={title} opened={opened} onClose={() => close()} styles={() => ({
-        title: {
-            flexGrow: 1
+    return <Modal {...rest} title={title} opened={opened} onClose={() => close()} styles={(theme, params) => {
+        const inherited = (rest?.styles && typeof rest?.styles === 'function' ? rest.styles(theme, params) : rest?.styles);
+        return {
+            ...inherited,
+            title: {
+                ...(inherited as any)?.title,
+                flexGrow: 1
+            }
         }
-    })}>
+    }}>
         <Render {...modelProps} />
     </Modal>
 }

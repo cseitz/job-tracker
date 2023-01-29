@@ -40,7 +40,7 @@ export const jobTableColumns = {
         maxSize: 180,
         cell(props) {
             const job = props.row.original;
-            return <JobField.Applied {...{ job }} sx={{
+            return <JobField.Applied mutate {...{ job }} sx={{
                 width: props.column.columnDef.size,
                 minWidth: props.column.columnDef.minSize,
                 maxWidth: props.column.columnDef.maxSize,
@@ -55,7 +55,7 @@ export const jobTableColumns = {
         // maxSize: 300,
         cell(props) {
             const job = props.row.original;
-            return <JobField.Status {...{ job }} sx={{
+            return <JobField.Status mutate {...{ job }} sx={{
                 // width: props.column.columnDef.size,
                 // minWidth: props.column.columnDef.minSize,
                 // maxWidth: props.column.columnDef.maxSize,

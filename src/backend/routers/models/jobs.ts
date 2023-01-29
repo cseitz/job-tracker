@@ -9,13 +9,21 @@ export const jobProcedures = router({
     get: procedure
         .input(z.number())
         .query(async ({ input }) => {
-            const job = await Job.findOne(o => o.id === input)
+            const job = await Job.findOne(o => o.id === input, ['deleted'])
             return { job }
         }),
 
     list: procedure
+        .input(z.object({
+            deleted: z.boolean().optional().nullable(),
+        }).optional().nullable())
         .query(async ({ input }) => {
-            const jobs = await Job.find(o => !o.deleted);
+            if (input?.deleted) {
+                return {
+                    jobs: await Job.find(o => o?.deleted ? true : false, ['deleted']),
+                }
+            }
+            const jobs = await Job.find();
             return { jobs }
         }),
 
@@ -32,6 +40,7 @@ export const jobProcedures = router({
         .mutation(async ({ input }) => {
             await db.ready;
             const doc = new Job(input.id);
+            console.log({ doc })
             for (const key in input) {
                 if (key == 'id') { }
                 else {
