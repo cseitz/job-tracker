@@ -3,6 +3,7 @@ import { useForm, zodResolver } from '@mantine/form';
 import { jobData } from 'backend/data/models/job';
 import { api } from 'utils/trpc';
 import { create } from 'zustand';
+import { CompanyIcon, LinkIcon, UserIcon } from './icons';
 
 
 type UseJobModal = {
@@ -33,10 +34,12 @@ export function CreateJobModal() {
         validate: zodResolver(jobData.pick({
             company: true,
             title: true,
+            link: true,
         })),
         initialValues: {
             company: '',
             title: '',
+            link: '',
         }
     })
 
@@ -54,13 +57,15 @@ export function CreateJobModal() {
         mutation.mutate({
             title: values.title,
             company: values.company,
+            link: values.link,
         });
     })
 
-    return <Modal opened={opened} onClose={() => toggle(false)} title={<Title order={3}>Add Job</Title>}>
+    return <Modal opened={opened} onClose={() => toggle(false)} title={<Title order={3}>Add Job</Title>} trapFocus>
         <form onSubmit={onSubmit}>
-            <TextInput label='Job Title' placeholder='Developer' {...form.getInputProps('title')} disabled={mutation.isLoading} withAsterisk />
-            <TextInput label='Company' placeholder='Acme' {...form.getInputProps('company')} disabled={mutation.isLoading} withAsterisk mt='sm' />
+            <TextInput label='Company' placeholder='Acme' icon={<CompanyIcon />} data-autofocus {...form.getInputProps('company')} disabled={mutation.isLoading} required withAsterisk={false} mt='sm' />
+            <TextInput label='Job Title' placeholder='Developer' icon={<UserIcon />} {...form.getInputProps('title')} disabled={mutation.isLoading} required withAsterisk={false} />
+            <TextInput label='Link' placeholder='Link to Job Posting' icon={<LinkIcon />} {...form.getInputProps('link')} disabled={mutation.isLoading} required withAsterisk={false} />
             <Group position="right" mt="xl">
                 <Button type="submit" disabled={mutation.isLoading}>Add</Button>
             </Group>

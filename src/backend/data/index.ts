@@ -1,6 +1,7 @@
 import { Low } from 'lowdb';
 import { SuperJSONFile } from './storage';
 import { JobData } from './models/job';
+import { env } from 'utils/env';
 
 type DatabaseSchema = {
     indexes: { [key: string]: number }
@@ -8,7 +9,7 @@ type DatabaseSchema = {
 }
 
 
-const lowdb = new Low(new SuperJSONFile<DatabaseSchema>(process.cwd() + '/data.json'));
+const lowdb = new Low(new SuperJSONFile<DatabaseSchema>(`${process.cwd()}/data/${env.DATASET}.json`));
 export const ready = new Promise<typeof lowdb>(async resolve => {
     await lowdb.read();
     lowdb.data ||= {

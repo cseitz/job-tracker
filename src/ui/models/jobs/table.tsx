@@ -1,25 +1,26 @@
-import { createColumnHelper, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
-import { JobData } from '../../../backend/data/models/job';
-import { ActionIcon, Box, Global, Group, Menu, Paper, Table, TableProps } from '@mantine/core';
-import { JobField } from './fields';
-import { onlyIf } from '../../../utils/mantine';
-import { useEffect, useLayoutEffect, useRef } from 'react';
-import { NoSSR } from '../../../utils/ssr';
 import { Icon } from '@cseitz/icons';
+import { faArrowUpRightFromSquare } from '@cseitz/icons-regular/arrow-up-right-from-square';
 import { faCaretDown } from '@cseitz/icons-regular/caret-down';
 import { faCaretUp } from '@cseitz/icons-regular/caret-up';
 import { faEllipsis } from '@cseitz/icons-regular/ellipsis';
-import { faTrash } from '@cseitz/icons-regular/trash';
 import { faPencil } from '@cseitz/icons-regular/pencil';
+import { faTrash } from '@cseitz/icons-regular/trash';
+import { ActionIcon, Box, Group, Menu, Paper, PaperProps, Table, TableProps } from '@mantine/core';
+import { useElementSize, useWindowScroll } from '@mantine/hooks';
+import { createColumnHelper, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
+import { useLayoutEffect, useRef } from 'react';
+import { JobData } from '../../../backend/data/models/job';
+import { onlyIf } from '../../../utils/mantine';
+import { NoSSR } from '../../../utils/ssr';
+import { JobField } from './fields';
 import { Job } from './modal';
-import { useElementSize, useIntersection, useWindowScroll } from '@mantine/hooks';
-import { PaperProps } from '@mantine/core';
 
 const SortDescendingIcon = Icon(faCaretDown);
 const SortAscendingIcon = Icon(faCaretUp);
 const OptionsIcon = Icon(faEllipsis);
 const EditIcon = Icon(faPencil);
 const TrashIcon = Icon(faTrash);
+const OpenLinkIcon = Icon(faArrowUpRightFromSquare);
 
 
 const c = createColumnHelper<JobData>();
@@ -227,6 +228,7 @@ function JobOptionsMenu(props: {
             <Menu.Dropdown>
                 <>
                     <Menu.Label>Job - Options</Menu.Label>
+                    <Menu.Item icon={<OpenLinkIcon scale={14} />} onClick={() => openJob(job)} disabled={!job?.link}>Open</Menu.Item>
                     <Menu.Item icon={<EditIcon scale={14} />} onClick={() => openJob(job)}>Edit</Menu.Item>
                 </>
 

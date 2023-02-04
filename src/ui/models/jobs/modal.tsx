@@ -1,24 +1,16 @@
-import { JobData, jobData } from 'backend/data/models/job';
-import { ModelController } from '../model';
-import { ActionIcon, Alert, Box, Button, Checkbox, Divider, Stack, Switch, Text, TextInput } from '@mantine/core';
-import { useEffect, useMemo, useRef } from 'react';
-import { api, apiContext } from 'utils/trpc';
-import { openConfirmModal } from '@mantine/modals';
-import { faTrash } from '@cseitz/icons-regular/trash';
-import { Icon } from '@cseitz/icons';
-import { Group } from '@mantine/core';
-import { Code } from '@mantine/core';
-import { Badge } from '@mantine/core';
-import { JOB_STATUS_COLORS } from './fields/status';
+import { ActionIcon, Alert, Badge, Box, Button, Code, Divider, Grid, Group, Stack, Text, TextInput } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
+import { openConfirmModal } from '@mantine/modals';
+import { JobData, jobData } from 'backend/data/models/job';
 import { pick } from 'lodash';
-import { JobField } from './fields';
-import { Grid } from '@mantine/core';
+import { useEffect, useMemo, useRef } from 'react';
+import { onlyIf } from 'utils/mantine';
+import { api } from 'utils/trpc';
 import { z } from 'zod';
-import { faDollarSign } from '@cseitz/icons-regular/dollar-sign';
-
-const TrashIcon = Icon(faTrash);
-const MoneyIcon = Icon(faDollarSign);
+import { ModelController } from '../model';
+import { JobField } from './fields';
+import { JOB_STATUS_COLORS } from './fields/status';
+import { CalendarIcon, CompanyIcon, LinkIcon, MoneyIcon, TrashIcon, UserIcon } from './icons';
 
 
 export const Job = Object.assign(new ModelController({
@@ -76,6 +68,7 @@ export const Job = Object.assign(new ModelController({
             title: true,
             offer: true,
             status: true,
+            link: true,
         }).extend({
             hasOffer: z.boolean(),
         })),
@@ -119,6 +112,8 @@ export const Job = Object.assign(new ModelController({
         return state !== serialized;
     }, [form.values]);
 
+    const editing = true; //false;
+
     return <Box>
         <form onSubmit={onSubmit}>
             <Stack spacing={'xs'}>
@@ -135,17 +130,18 @@ export const Job = Object.assign(new ModelController({
                 </Alert>}
                 <Grid>
                     <Grid.Col span={8}>
-                        <TextInput label='Company' {...form.getInputProps('company')} disabled={mutation.isLoading} />
+                        <TextInput label='Company' icon={<CompanyIcon />} {...form.getInputProps('company')}
+                            variant={onlyIf(!editing, 'unstyled')} readOnly={!editing} disabled={mutation.isLoading} />
                     </Grid.Col>
                     <Grid.Col span={'auto'}>
                         {/* <JobField.Status label='Status' variant='default' job={{ ...job!, offer: form.values.hasOffer }} sx={{ flexGrow: 1 }} {...form.getInputProps('status')} /> */}
-                        {job && <JobField.Applied label='Applied' variant='default' job={job} {...form.getInputProps('applied')} />}
+                        {job && <JobField.Applied icon={<CalendarIcon />} label='Applied' variant={onlyIf(!editing, 'unstyled')} readOnly={!editing} job={job} {...form.getInputProps('applied')} />}
                     </Grid.Col>
                 </Grid>
-                <TextInput label='Title' {...form.getInputProps('title')} disabled={mutation.isLoading} />
+                <TextInput label='Title' icon={<UserIcon />} {...form.getInputProps('title')} variant={onlyIf(!editing, 'unstyled')} readOnly={!editing} disabled={mutation.isLoading} />
                 <Grid>
-                    <Grid.Col span={4}>
-                        {job && <TextInput placeholder='100,000' label='Offer' styles={{
+                    {job && (editing || job.offer) && <Grid.Col span={4}>
+                        {/* {job && <TextInput placeholder='No Offer Received' label='Offer' variant={onlyIf(!editing, 'unstyled')} readOnly={!editing} styles={{
                             icon: {
                                 pointerEvents: 'inherit',
                                 // justifyContent: 'left',
@@ -162,12 +158,27 @@ export const Job = Object.assign(new ModelController({
                                 form.setFieldValue('hasOffer', false);
                             }
                             form.getInputProps('offer').onChange(event);
+                        }} />} */}
+                        {job && <TextInput placeholder='No Offer Received' label='Offer' variant={onlyIf(!editing, 'unstyled')} readOnly={!editing} styles={{
+                            icon: {
+                                pointerEvents: 'inherit',
+                                // justifyContent: 'left',
+                            }
+                        }} icon={<MoneyIcon />} disabled={mutation.isLoading} {...form.getInputProps('offer')} required={form.values.hasOffer} onChange={(event) => {
+                            const value = event.target.value;
+                            if (value) {
+                                form.setFieldValue('hasOffer', true);
+                            } else {
+                                form.setFieldValue('hasOffer', false);
+                            }
+                            form.getInputProps('offer').onChange(event);
                         }} />}
-                    </Grid.Col>
+                    </Grid.Col>}
                     <Grid.Col span={'auto'}>
-                        {job && <JobField.Status label='Status' variant='default' job={{ ...job, offer: form.values.hasOffer }} sx={{ flexGrow: 1 }} {...form.getInputProps('status')} />}
+                        {job && <JobField.Status label='Status' job={{ ...job, offer: form.values.hasOffer }} sx={{ flexGrow: 1 }} variant={editing ? 'default' : 'unstyled'} readOnly={!editing} {...form.getInputProps('status')} />}
                     </Grid.Col>
                 </Grid>
+                <TextInput label='Link' placeholder='Link to Job Posting' icon={<LinkIcon />} {...form.getInputProps('link')} variant={onlyIf(!editing, 'unstyled')} readOnly={!editing} disabled={mutation.isLoading} />
                 <Grid mt="xl">
                     <Grid.Col span={7}>
                         <Group sx={{ justifyContent: 'left' }}>

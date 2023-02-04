@@ -9,6 +9,7 @@ export const jobData = modelData.extend({
     applied: z.date().default(new Date()),
     status: z.enum(['pending', 'rejected', 'interview', 'offered', 'accepted', 'declined']).default('pending'),
     offer: z.string().optional(),
+    link: z.string().optional(),
 })
 
 
