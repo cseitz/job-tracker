@@ -5,7 +5,7 @@ import { faCaretUp } from '@cseitz/icons-regular/caret-up';
 import { faEllipsis } from '@cseitz/icons-regular/ellipsis';
 import { faPencil } from '@cseitz/icons-regular/pencil';
 import { faTrash } from '@cseitz/icons-regular/trash';
-import { ActionIcon, Box, Group, Menu, Paper, PaperProps, Table, TableProps } from '@mantine/core';
+import { ActionIcon, Box, Group, Menu, Paper, PaperProps, Table, TableProps, Tooltip } from '@mantine/core';
 import { useElementSize, useWindowScroll } from '@mantine/hooks';
 import { createColumnHelper, flexRender, getCoreRowModel, getFilteredRowModel, getSortedRowModel, useReactTable } from '@tanstack/react-table';
 import { useLayoutEffect, useRef } from 'react';
@@ -14,6 +14,8 @@ import { onlyIf } from '../../../utils/mantine';
 import { NoSSR } from '../../../utils/ssr';
 import { JobField } from './fields';
 import { Job } from './modal';
+import Link from 'next/link';
+import { Tags, parseTags } from 'backend/data/tags';
 
 const SortDescendingIcon = Icon(faCaretDown);
 const SortAscendingIcon = Icon(faCaretUp);
@@ -61,6 +63,23 @@ export const jobTableColumns = {
                 // minWidth: props.column.columnDef.minSize,
                 // maxWidth: props.column.columnDef.maxSize,
             }} />
+        },
+    }),
+    tags: c.accessor('tags', {
+        size: 100,
+        cell(props) {
+            const job = props.row.original;
+            return <NoSSR>
+                <Group sx={{ justifyContent: 'left' }} spacing={1}>
+                    {parseTags(job.tags || []).map(o => Tags[o]).map(o => ({ ...o, Icon: o.icon })).map(({ Icon, label, color }) => (
+                        <Tooltip label={label}>
+                            <ActionIcon color={color}>
+                                <Icon />
+                            </ActionIcon>
+                        </Tooltip>
+                    ))}
+                </Group>
+            </NoSSR>
         },
     }),
     updated: c.accessor('updated', {
@@ -215,6 +234,8 @@ function JobOptionsMenu(props: {
 }) {
     const { job } = props;
 
+    const OpenMenuItem = <Menu.Item icon={<OpenLinkIcon scale={14} />} disabled={!job?.link}>Open</Menu.Item>;
+
     return <NoSSR>
         <Menu shadow='md' width={200} position='left-start' trigger='hover'>
             <Menu.Target>
@@ -228,8 +249,11 @@ function JobOptionsMenu(props: {
             <Menu.Dropdown>
                 <>
                     <Menu.Label>Job - Options</Menu.Label>
-                    <Menu.Item icon={<OpenLinkIcon scale={14} />} onClick={() => openJob(job)} disabled={!job?.link}>Open</Menu.Item>
                     <Menu.Item icon={<EditIcon scale={14} />} onClick={() => openJob(job)}>Edit</Menu.Item>
+                    {job?.link ? <Link href={job?.link || ''} target={'_blank'} style={{ textDecoration: 'none' }}>
+                        {OpenMenuItem}
+                    </Link> : OpenMenuItem}
+
                 </>
 
                 <Menu.Divider />

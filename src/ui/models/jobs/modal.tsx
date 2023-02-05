@@ -3,14 +3,15 @@ import { useForm, zodResolver } from '@mantine/form';
 import { openConfirmModal } from '@mantine/modals';
 import { JobData, jobData } from 'backend/data/models/job';
 import { pick } from 'lodash';
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { onlyIf } from 'utils/mantine';
 import { api } from 'utils/trpc';
 import { z } from 'zod';
 import { ModelController } from '../model';
 import { JobField } from './fields';
 import { JOB_STATUS_COLORS } from './fields/status';
-import { CalendarIcon, CompanyIcon, LinkIcon, MoneyIcon, TrashIcon, UserIcon } from './icons';
+import { CalendarIcon, CompanyIcon, LinkIcon, MoneyIcon, TagIcon, TrashIcon, UserIcon } from './icons';
+import { useDebouncedState } from '@mantine/hooks';
 
 
 export const Job = Object.assign(new ModelController({
@@ -69,26 +70,34 @@ export const Job = Object.assign(new ModelController({
             offer: true,
             status: true,
             link: true,
+            tags: true,
         }).extend({
             hasOffer: z.boolean(),
+            // tags: z.array(jobData.shape.tags._def.innerType)
         })),
     });
 
+    const [isMutating, setIsMutating] = useState(false);
     const mutation = api.jobs.update.useMutation({
         onSuccess() {
             api.jobs.get.invalidate(job!.id);
             api.jobs.invalidate();
+            setTimeout(() => {
+                setIsMutating(false);
+            }, 100)
         }
     });
 
     const onSubmit = form.onSubmit(values => {
         console.log('submit', { values });
-        const { hasOffer, ...rest } = values;
+        const { hasOffer, tags, ...rest } = values;
         if (!hasOffer) {
             rest.offer = undefined;
         }
+        setIsMutating(true);
         mutation.mutate({
             id: job!.id,
+            tags: [...new Set<any>(tags) as any],
             ...rest,
         });
     })
@@ -109,8 +118,10 @@ export const Job = Object.assign(new ModelController({
             ...pick(job, Object.keys(rest)),
             hasOffer: job?.offer ? true : false,
         });
-        return state !== serialized;
-    }, [form.values]);
+        return !isMutating && state !== serialized;
+    }, [form.values, isMutating]);
+
+
 
     const editing = true; //false;
 
@@ -179,22 +190,37 @@ export const Job = Object.assign(new ModelController({
                     </Grid.Col>
                 </Grid>
                 <TextInput label='Link' placeholder='Link to Job Posting' icon={<LinkIcon />} {...form.getInputProps('link')} variant={onlyIf(!editing, 'unstyled')} readOnly={!editing} disabled={mutation.isLoading} />
-                <Grid mt="xl">
-                    <Grid.Col span={7}>
+                {/* <JobField.TagSelect job={{ ...job }} label='Tags' icon={<LinkIcon />} {...form.getInputProps('tags')} onChange={(value) => {
+                    form.getInputProps('tags').onChange(new Set(value));
+                }} variant={onlyIf(!editing, 'unstyled')} readOnly={!editing} disabled={mutation.isLoading} /> */}
+                {job && <JobField.TagSelect label='Tags' placeholder='Tags' job={{ ...job }} icon={<TagIcon />} sx={{ flexGrow: 1 }} variant={editing ? 'default' : 'unstyled'} readOnly={!editing} {...form.getInputProps('tags')} />}
+                {<Grid mt="xl">
+                    <Grid.Col span={'auto'}>
                         <Group sx={{ justifyContent: 'left' }}>
-                            {isDirty && <Button type="submit" disabled={mutation.isLoading}>Save Changes</Button>}
                             {isDirty && <Button variant='subtle' disabled={mutation.isLoading} onClick={reset}>Discard Changes</Button>}
                         </Group>
                     </Grid.Col>
-                    <Grid.Col span={'auto'}>
+                    <Grid.Col span={7}>
                         <Group sx={{ justifyContent: 'right' }}>
-                            {/* <Button variant='outline' disabled={mutation.isLoading} onClick={reset}>Discard Changes</Button> */}
-                            <Button variant='outline' disabled={mutation.isLoading} onClick={() => Job.close()}>
-                                {isDirty ? 'Cancel' : 'Close'}
-                            </Button>
+                            {isDirty && <Button type="submit" disabled={mutation.isLoading}>Save Changes</Button>}
                         </Group>
                     </Grid.Col>
-                </Grid>
+                </Grid>}
+                {/* <Grid mt="xl">
+                    <Grid.Col span={'auto'}>
+                        <Group sx={{ justifyContent: 'left' }}>
+                            {isDirty && <Button variant='outline' disabled={mutation.isLoading} onClick={() => Job.close()}>
+                                {isDirty ? 'Cancel' : 'Close'}
+                            </Button>}
+                        </Group>
+                    </Grid.Col>
+                    <Grid.Col span={7}>
+                        <Group sx={{ justifyContent: 'right' }}>
+                            {isDirty && <Button variant='subtle' disabled={mutation.isLoading} onClick={reset}>Discard Changes</Button>}
+                            {isDirty && <Button type="submit" disabled={mutation.isLoading}>Save Changes</Button>}
+                        </Group>
+                    </Grid.Col>
+                </Grid> */}
             </Stack>
         </form>
     </Box>

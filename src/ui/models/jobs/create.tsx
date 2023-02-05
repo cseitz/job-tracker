@@ -3,7 +3,9 @@ import { useForm, zodResolver } from '@mantine/form';
 import { jobData } from 'backend/data/models/job';
 import { api } from 'utils/trpc';
 import { create } from 'zustand';
-import { CompanyIcon, LinkIcon, UserIcon } from './icons';
+import { CompanyIcon, LinkIcon, TagIcon, UserIcon } from './icons';
+import { JobField } from './fields';
+import { useEffect } from 'react';
 
 
 type UseJobModal = {
@@ -35,13 +37,21 @@ export function CreateJobModal() {
             company: true,
             title: true,
             link: true,
+            tags: true,
         })),
         initialValues: {
             company: '',
             title: '',
             link: '',
+            tags: [],
         }
     })
+
+    useEffect(() => {
+        if (!opened) {
+            form.reset();
+        }
+    }, [opened])
 
     const context = api.useContext();
     const mutation = api.jobs.create.useMutation({
@@ -58,6 +68,7 @@ export function CreateJobModal() {
             title: values.title,
             company: values.company,
             link: values.link,
+            tags: values.tags,
         });
     })
 
@@ -65,7 +76,8 @@ export function CreateJobModal() {
         <form onSubmit={onSubmit}>
             <TextInput label='Company' placeholder='Acme' icon={<CompanyIcon />} data-autofocus {...form.getInputProps('company')} disabled={mutation.isLoading} required withAsterisk={false} mt='sm' />
             <TextInput label='Job Title' placeholder='Developer' icon={<UserIcon />} {...form.getInputProps('title')} disabled={mutation.isLoading} required withAsterisk={false} />
-            <TextInput label='Link' placeholder='Link to Job Posting' icon={<LinkIcon />} {...form.getInputProps('link')} disabled={mutation.isLoading} required withAsterisk={false} />
+            <TextInput label='Link' placeholder='Link' icon={<LinkIcon />} {...form.getInputProps('link')} disabled={mutation.isLoading} required withAsterisk={false} />
+            <JobField.TagSelect label='Tags' placeholder='Tags' icon={<TagIcon />} sx={{ flexGrow: 1 }} {...form.getInputProps('tags')} />
             <Group position="right" mt="xl">
                 <Button type="submit" disabled={mutation.isLoading}>Add</Button>
             </Group>
