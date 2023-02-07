@@ -20,6 +20,8 @@ export {
 }
 
 
+export const useDatasetParam = createRouteParameter({ name: 'dataset', type: String });
+
 export function mappedActions<Actions extends Record<string, (...args: any[]) => any>>(actions: Actions) {
     return function <
         Key extends keyof Actions,

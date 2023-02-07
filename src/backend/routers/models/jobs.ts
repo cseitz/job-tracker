@@ -7,14 +7,18 @@ import { procedure, router } from '../../trpc';
 export const jobProcedures = router({
     /** Get a ticket */
     get: procedure
-        .input(z.number())
+        .input(z.object({
+            dataset: z.string(),
+            id: z.number(),
+        }))
         .query(async ({ input }) => {
-            const job = await Job.findOne(o => o.id === input, ['deleted'])
+            const job = await Job.findOne(o => o.id === input.id, ['deleted'])
             return { job }
         }),
 
     list: procedure
         .input(z.object({
+            dataset: z.string(),
             status: jobData.shape.status.optional().nullable(),
             deleted: z.boolean().optional().nullable(),
         }).optional().nullable())
@@ -33,7 +37,9 @@ export const jobProcedures = router({
         }),
 
     create: procedure
-        .input(jobData.omit({ id: true, created: true, updated: true }))
+        .input(jobData.omit({ id: true, created: true, updated: true }).merge(z.object({
+            dataset: z.string(),
+        })))
         .mutation(async ({ input }) => {
             const doc = new Job(input);
             const job = await doc.save();
@@ -41,7 +47,9 @@ export const jobProcedures = router({
         }),
 
     update: procedure
-        .input(jobData.pick({ id: true }).merge(jobData.omit({ id: true, created: true, updated: true }).partial()))
+        .input(jobData.pick({ id: true }).merge(jobData.omit({ id: true, created: true, updated: true }).partial()).merge(z.object({
+            dataset: z.string(),
+        })))
         .mutation(async ({ input }) => {
             await db.ready;
             const doc = new Job(input.id);
@@ -57,7 +65,9 @@ export const jobProcedures = router({
         }),
 
     delete: procedure
-        .input(jobData.pick({ id: true }))
+        .input(jobData.pick({ id: true }).merge(z.object({
+            dataset: z.string(),
+        })))
         .mutation(async ({ input }) => {
             await db.ready;
             const doc = new Job(input.id);
@@ -69,7 +79,9 @@ export const jobProcedures = router({
         }),
 
     recover: procedure
-        .input(jobData.pick({ id: true }))
+        .input(jobData.pick({ id: true }).merge(z.object({
+            dataset: z.string(),
+        })))
         .mutation(async ({ input }) => {
             await db.ready;
             const doc = new Job(input.id);

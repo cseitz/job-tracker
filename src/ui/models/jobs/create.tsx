@@ -6,6 +6,7 @@ import { create } from 'zustand';
 import { CompanyIcon, LinkIcon, TagIcon, UserIcon } from './icons';
 import { JobField } from './fields';
 import { useEffect } from 'react';
+import { useDatasetParam } from 'hooks';
 
 
 type UseJobModal = {
@@ -69,6 +70,7 @@ export function CreateJobModal() {
             company: values.company,
             link: values.link,
             tags: values.tags,
+            dataset: useDatasetParam.getState().value || '',
         });
     })
 

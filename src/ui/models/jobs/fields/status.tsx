@@ -3,7 +3,7 @@ import { JobData } from '../../../../backend/data/models/job'
 import { api } from '../../../../utils/trpc';
 import { Icon } from '@cseitz/icons';
 import { forwardRef, useMemo } from 'react';
-import { useColors, useProps } from '../../../../hooks';
+import { useColors, useDatasetParam, useProps } from '../../../../hooks';
 import { faClock } from '@cseitz/icons-regular/clock';
 import { faBan } from '@cseitz/icons-regular/ban';
 import { faCalendar } from '@cseitz/icons-regular/calendar';
@@ -90,7 +90,11 @@ function Status(props: Partial<SelectProps> & { job: JobData, mutate?: boolean }
             // rightSection={updatedAt}
             // rightSectionWidth={100}
             onChange={(value: any) => {
-                if (mutate) updateJob({ id: id, status: value });
+                if (mutate) updateJob({
+                    id: id,
+                    dataset: useDatasetParam.getState().value || '',
+                    status: value
+                });
             }}
             styles={(theme) => ({
                 input: {

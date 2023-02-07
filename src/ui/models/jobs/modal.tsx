@@ -12,6 +12,7 @@ import { JobField } from './fields';
 import { JOB_STATUS_COLORS } from './fields/status';
 import { CalendarIcon, CompanyIcon, LinkIcon, MoneyIcon, TagIcon, TrashIcon, UserIcon } from './icons';
 import { useDebouncedState } from '@mantine/hooks';
+import { useDatasetParam } from 'hooks';
 
 
 export const Job = Object.assign(new ModelController({
@@ -28,7 +29,10 @@ export const Job = Object.assign(new ModelController({
     },
 
     title(props) {
-        const query = api.jobs.get.useQuery(Number(props.id), {
+        const query = api.jobs.get.useQuery({
+            id: Number(props.id),
+            dataset: useDatasetParam.getState().value || '',
+        }, {
             enabled: props.opened,
         });
 
@@ -57,7 +61,10 @@ export const Job = Object.assign(new ModelController({
     const _id = useRef(id || '');
     if (opened) _id.current = id!;
 
-    const query = api.jobs.get.useQuery(Number(_id.current), {
+    const query = api.jobs.get.useQuery({
+        id: Number(_id.current),
+        dataset: useDatasetParam.getState().value || '',
+    }, {
         enabled: opened,
     });
 
@@ -80,7 +87,10 @@ export const Job = Object.assign(new ModelController({
     const [isMutating, setIsMutating] = useState(false);
     const mutation = api.jobs.update.useMutation({
         onSuccess() {
-            api.jobs.get.invalidate(job!.id);
+            api.jobs.get.invalidate({
+                id: job!.id,
+                dataset: useDatasetParam.getState().value || '',
+            });
             api.jobs.invalidate();
             setTimeout(() => {
                 setIsMutating(false);
@@ -97,6 +107,7 @@ export const Job = Object.assign(new ModelController({
         setIsMutating(true);
         mutation.mutate({
             id: job!.id,
+            dataset: useDatasetParam.getState().value || '',
             tags: [...new Set<any>(tags) as any],
             ...rest,
         });
@@ -134,6 +145,7 @@ export const Job = Object.assign(new ModelController({
                         <Button variant='light' color='red.0' onClick={() => {
                             mutation.mutate({
                                 id: job?.id,
+                                dataset: useDatasetParam.getState().value || '',
                                 deleted: undefined,
                             })
                         }}>Restore</Button>
@@ -241,7 +253,10 @@ function promptDeleteJob(id: JobData['id']) {
         },
         onConfirm() {
             console.log('do delete job', { job: id });
-            api.jobs.delete.mutate({ id }).then(() => {
+            api.jobs.delete.mutate({
+                id,
+                dataset: useDatasetParam.getState().value || '',
+            }).then(() => {
                 api.jobs.invalidate();
             })
         },

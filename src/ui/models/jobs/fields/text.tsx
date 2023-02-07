@@ -1,6 +1,6 @@
 import { DatePicker } from '@mantine/dates';
 import { JobData } from '../../../../backend/data/models/job';
-import { useIsMobile, useProps } from '../../../../hooks';
+import { useDatasetParam, useIsMobile, useProps } from '../../../../hooks';
 import { api } from '../../../../utils/trpc';
 import { ActionIcon, Group, GroupProps, Popover, TextInput, Tooltip } from '@mantine/core';
 import { Icon } from '@cseitz/icons';
@@ -44,7 +44,11 @@ function EditableText(props: Partial<GroupProps> & { job: JobData, field: String
             <Popover.Dropdown p={0}>
                 <Group spacing={0} sx={{ justifyContent: 'center' }}>
                     <Tooltip label='Save Changes'>
-                        <ActionIcon onClick={() => updateJob({ id, [props.field]: input })}>
+                        <ActionIcon onClick={() => updateJob({
+                            id,
+                            dataset: useDatasetParam.getState().value || '',
+                            [props.field]: input
+                        })}>
                             <SaveChangesIcon />
                         </ActionIcon>
                     </Tooltip>
@@ -58,23 +62,23 @@ function EditableText(props: Partial<GroupProps> & { job: JobData, field: String
         </Popover>
     </NoSSR>
 
-    return <Group {...args}>
-        <TextInput value={input} onInput={(event) => {
-            setInput((event.target as any).value);
-        }} variant='unstyled' sx={{ flexGrow: 1, paddingRight: value === input ? 0 : 0 }} />
-        {value !== input && <Group spacing={0} sx={{ width: 56 }}>
-            <Tooltip label='Save Changes'>
-                <ActionIcon onClick={() => updateJob({ id, [props.field]: input })}>
-                    <SaveChangesIcon />
-                </ActionIcon>
-            </Tooltip>
-            <Tooltip label='Cancel'>
-                <ActionIcon onClick={() => setInput(value)}>
-                    <CancelChangesIcon />
-                </ActionIcon>
-            </Tooltip>
-        </Group>}
-    </Group>
+    // return <Group {...args}>
+    //     <TextInput value={input} onInput={(event) => {
+    //         setInput((event.target as any).value);
+    //     }} variant='unstyled' sx={{ flexGrow: 1, paddingRight: value === input ? 0 : 0 }} />
+    //     {value !== input && <Group spacing={0} sx={{ width: 56 }}>
+    //         <Tooltip label='Save Changes'>
+    //             <ActionIcon onClick={() => updateJob({ id, [props.field]: input })}>
+    //                 <SaveChangesIcon />
+    //             </ActionIcon>
+    //         </Tooltip>
+    //         <Tooltip label='Cancel'>
+    //             <ActionIcon onClick={() => setInput(value)}>
+    //                 <CancelChangesIcon />
+    //             </ActionIcon>
+    //         </Tooltip>
+    //     </Group>}
+    // </Group>
 }
 
 export default {

@@ -1,6 +1,6 @@
 import { DatePicker, DatePickerProps } from '@mantine/dates';
 import { JobData } from '../../../../backend/data/models/job';
-import { useIsMobile } from '../../../../hooks';
+import { useDatasetParam, useIsMobile } from '../../../../hooks';
 import { api } from '../../../../utils/trpc';
 import { Box, Tooltip } from '@mantine/core';
 import { NoSSR } from '../../../../utils/ssr';
@@ -22,7 +22,11 @@ function Applied(props: Partial<DatePickerProps> & { job: JobData, mutate?: bool
     const picker = <DatePicker value={applied} withinPortal variant='unstyled'
         clearable={false} dropdownType={isMobile ? 'modal' : 'popover'}
         onChange={(value) => {
-            if (mutate) updateJob({ id, applied: value! });
+            if (mutate) updateJob({
+                id,
+                dataset: useDatasetParam.getState().value || '',
+                applied: value!
+            });
         }} {...rest} />;
 
     return <NoSSR loader={<Box style={{ height: 36 }} {...rest as any} />}>

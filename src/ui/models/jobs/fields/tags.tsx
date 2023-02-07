@@ -1,6 +1,6 @@
 import { DatePicker, DatePickerProps } from '@mantine/dates';
 import { JobData } from '../../../../backend/data/models/job';
-import { useIsMobile } from '../../../../hooks';
+import { useDatasetParam, useIsMobile } from '../../../../hooks';
 import { api } from '../../../../utils/trpc';
 import { Box, CloseButton, MultiSelect, Tooltip, useMantineTheme } from '@mantine/core';
 import { NoSSR } from '../../../../utils/ssr';
@@ -48,7 +48,11 @@ function TagSelect(props: Partial<MultiSelectProps> & { job?: JobData, mutate?: 
         itemComponent={TagItem}
         onChange={(value) => {
             if (props.job && id) {
-                if (mutate) updateJob({ id, tags: parseTags(value) });
+                if (mutate) updateJob({
+                    id,
+                    dataset: useDatasetParam.getState().value || '',
+                    tags: parseTags(value)
+                });
                 else {
                     props.job.tags = parseTags(value);
                 }
