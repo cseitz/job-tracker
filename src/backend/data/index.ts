@@ -2,6 +2,7 @@ import { Low } from 'lowdb';
 import { SuperJSONFile } from './storage';
 import { JobData } from './models/job';
 import { env } from '../../utils/env';
+import { mkdirSync } from 'fs';
 
 type DatabaseSchema = {
     indexes: { [key: string]: number }
@@ -9,6 +10,7 @@ type DatabaseSchema = {
 }
 
 
+mkdirSync(process.cwd() + '/data', { recursive: true });
 const lowdb = new Low(new SuperJSONFile<DatabaseSchema>(`${process.cwd()}/data/${env.DATASET}.json`));
 export const ready = new Promise<typeof lowdb>(async resolve => {
     await lowdb.read();
