@@ -15,7 +15,7 @@ import { NoSSR } from '../../../utils/ssr';
 import { JobField } from './fields';
 import { Job } from './modal';
 import Link from 'next/link';
-import { Tags, parseTags } from 'backend/data/tags';
+import { Tags, parseTags } from '../../../backend/data/tags';
 
 const SortDescendingIcon = Icon(faCaretDown);
 const SortAscendingIcon = Icon(faCaretUp);

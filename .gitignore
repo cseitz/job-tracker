@@ -42,4 +42,4 @@ yarn-error.log*
 .workflow-cache
 
 data.json
-data
+/data
