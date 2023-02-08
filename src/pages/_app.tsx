@@ -6,7 +6,7 @@ import { Router } from 'next/router';
 import { createContext } from 'react';
 import { ThemeProvider } from '../utils/mantine';
 import { ApiContextConsumer, trpc } from '../utils/trpc';
-import { RouteParameters } from 'hooks';
+import { RouteParameters } from '../hooks';
 import { ModalsProvider } from '@mantine/modals';
 
 

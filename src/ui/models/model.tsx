@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { z } from 'zod';
 import { Box, Modal, ScrollArea, Text, ModalProps } from '@mantine/core';
 import { useRef } from 'react';
-import { createRouteParameter } from 'hooks';
+import { createRouteParameter } from '../../hooks';
 
 
 /** @export 'helpers/model' */

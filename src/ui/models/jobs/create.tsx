@@ -1,7 +1,7 @@
 import { Button, Group, Modal, TextInput, Title } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
-import { jobData } from 'backend/data/models/job';
-import { api } from 'utils/trpc';
+import { jobData } from '../../../backend/data/models/job';
+import { api } from '../../../utils/trpc';
 import { create } from 'zustand';
 import { CompanyIcon, LinkIcon, TagIcon, UserIcon } from './icons';
 import { JobField } from './fields';

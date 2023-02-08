@@ -5,7 +5,7 @@ import { api } from '../../../../utils/trpc';
 import { Box, CloseButton, MultiSelect, Tooltip, useMantineTheme } from '@mantine/core';
 import { NoSSR } from '../../../../utils/ssr';
 import { MultiSelectProps } from '@mantine/core';
-import { Tags, parseTags } from 'backend/data/tags';
+import { Tags, parseTags } from '../../../../backend/data/tags';
 import { forwardRef, useMemo } from 'react';
 import { SelectItemProps } from '@mantine/core';
 import { MultiSelectValueProps } from '@mantine/core';

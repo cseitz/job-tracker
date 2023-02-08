@@ -1,6 +1,6 @@
 import { Text, TextProps, Tooltip } from '@mantine/core';
-import { JobData } from 'backend/data/models/job';
-import { NoSSR } from 'utils/ssr';
+import { JobData } from '../../../../backend/data/models/job';
+import { NoSSR } from '../../../../utils/ssr';
 
 
 const DAY = 24 * 60 * 60 * 1000;

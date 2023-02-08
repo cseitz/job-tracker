@@ -3,14 +3,14 @@ import { JobTable } from '../ui/models/jobs/table';
 import { api } from '../utils/trpc';
 import dynamic from 'next/dynamic';
 import { NoSSR, useClientHydration } from '../utils/ssr';
-import { Job } from 'ui/models/jobs/modal';
+import { Job } from '../ui/models/jobs/modal';
 import { Icon } from '@cseitz/icons';
 import { faPlus } from '@cseitz/icons-regular/plus';
-import { CreateJobModal, createJob } from 'ui/models/jobs/create';
+import { CreateJobModal, createJob } from '../ui/models/jobs/create';
 import { useRouter } from 'next/router';
-import { createRouteParameter } from 'hooks';
-import { JobData } from 'backend/data/models/job';
-import { INTERVIEW_STATUSES, OFFER_STATUSES } from 'ui/models/jobs/fields/status';
+import { createRouteParameter } from '../hooks';
+import { JobData } from '../backend/data/models/job';
+import { INTERVIEW_STATUSES, OFFER_STATUSES } from '../ui/models/jobs/fields/status';
 
 const PlusIcon = Icon(faPlus);
 

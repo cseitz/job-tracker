@@ -1,7 +1,7 @@
 import { Low } from 'lowdb';
 import { SuperJSONFile } from './storage';
 import { JobData } from './models/job';
-import { env } from 'utils/env';
+import { env } from '../../utils/env';
 
 type DatabaseSchema = {
     indexes: { [key: string]: number }

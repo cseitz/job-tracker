@@ -1,11 +1,11 @@
 import { ActionIcon, Alert, Badge, Box, Button, Code, Divider, Grid, Group, Stack, Text, TextInput } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
 import { openConfirmModal } from '@mantine/modals';
-import { JobData, jobData } from 'backend/data/models/job';
+import { JobData, jobData } from '../../../backend/data/models/job';
 import { pick } from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { onlyIf } from 'utils/mantine';
-import { api } from 'utils/trpc';
+import { onlyIf } from '../../../utils/mantine';
+import { api } from '../../../utils/trpc';
 import { z } from 'zod';
 import { ModelController } from '../model';
 import { JobField } from './fields';
