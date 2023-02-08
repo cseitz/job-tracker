@@ -5,6 +5,7 @@ import SuperJSON from 'superjson';
 import { create } from 'zustand';
 import { createFlatProxy, createRecursiveProxy } from '@trpc/server/shared';
 import get from 'lodash/get';
+import { getCookie, setCookie } from 'cookies-next';
 
 
 function getBaseUrl() {
@@ -29,7 +30,12 @@ export const react = createTRPCNext<ApiRouter>({
             transformer: SuperJSON,
             links: [
                 httpLink({
-                    url: `${getBaseUrl()}/api/trpc`
+                    url: `${getBaseUrl()}/api/trpc`,
+                    headers() {
+                        return {
+                            cookie: ctx?.req?.headers?.cookie,
+                        }
+                    },
                 }),
                 // httpBatchLink({
                 //     url: `${getBaseUrl()}/api/trpc`
