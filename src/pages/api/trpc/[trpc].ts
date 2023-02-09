@@ -19,7 +19,8 @@ const trpc = trpcNext.createNextApiHandler({
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
     // console.log(req.headers, req.url, req.cookies);
-    if (process.env.SECRET && !req.headers.host?.includes('localhost')) {
+    //  && !req.headers.host?.includes('localhost')
+    if (process.env.SECRET) {
         if (!('jobAuth' in req.cookies) || req.cookies['jobAuth'] !== process.env.SECRET) {
             // @ts-ignore
             req.reject = true;
