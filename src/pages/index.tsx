@@ -1,8 +1,8 @@
 import { Icon } from '@cseitz/icons';
 import { faLock } from '@cseitz/icons-regular/lock';
 import { faPlus } from '@cseitz/icons-regular/plus';
-import { Affix, Box, Button, Group, Paper, PasswordInput, SegmentedControl, TextInput } from '@mantine/core';
-import { useCallback, useMemo, useState } from 'react';
+import { Affix, Box, Button, Group, Paper, PasswordInput, SegmentedControl, Space, TextInput } from '@mantine/core';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { JobData } from '../backend/data/models/job';
 import { createRouteParameter } from '../hooks';
 import { CreateJobModal, createJob } from '../ui/models/jobs/create';
@@ -14,6 +14,7 @@ import { api } from '../utils/trpc';
 import { openModal } from '@mantine/modals';
 import { faEye } from '@cseitz/icons-regular/eye';
 import { faEyeSlash } from '@cseitz/icons-regular/eye-slash';
+import { JobSearch, setJobSearchData } from '../ui/models/jobs/search';
 
 const PlusIcon = Icon(faPlus);
 const LoginIcon = Icon(faLock);
@@ -35,6 +36,8 @@ export default function Homepage() {
 
     const jobs = query.data?.jobs || [];
     const isClient = useClientHydration();
+    setJobSearchData(jobs);
+    // useEffect(() => setJobSearchData(jobs), [jobs]);
 
     const isLoggedIn = useMemo(() => {
         if (typeof window === 'undefined') return true;
@@ -90,33 +93,37 @@ function FilterBar() {
     const qDeleted = useFilterDeletedParam(o => o.value);
     const deleted: any = qDeleted !== undefined ? 'true' : null;
 
-    return <Group sx={{ justifyContent: 'space-between' }}>
-        <Group>
-            <SegmentedControl defaultValue={status} value={status} data={[
-                ...INTERVIEW_STATUSES,
-                ...OFFER_STATUSES,
-            ]} onChange={(value) => {
-                useFilterStatusParam.setState({ value: value ? value as any : null })
-            }} onClick={(event) => {
-                const value = (event.target as any)?.value;
-                if (value === status) {
-                    useFilterStatusParam.setState({ value: null as any })
-                }
-            }} />
+    return <>
+        <JobSearch />
+        <br />
+        <Group sx={{ justifyContent: 'space-between' }}>
+            <Group>
+                <SegmentedControl defaultValue={status} value={status} data={[
+                    ...INTERVIEW_STATUSES,
+                    ...OFFER_STATUSES,
+                ]} onChange={(value) => {
+                    useFilterStatusParam.setState({ value: value ? value as any : null })
+                }} onClick={(event) => {
+                    const value = (event.target as any)?.value;
+                    if (value === status) {
+                        useFilterStatusParam.setState({ value: null as any })
+                    }
+                }} />
+            </Group>
+            <Group>
+                <SegmentedControl defaultValue={deleted} value={deleted} data={[
+                    { label: 'Deleted', value: 'true' }
+                ]} onChange={(value) => {
+                    useFilterDeletedParam.setState({ value: value ? true : null } as any)
+                }} onClick={(event) => {
+                    const value = (event.target as any)?.value;
+                    if (qDeleted) {
+                        useFilterDeletedParam.setState({ value: null } as any)
+                    }
+                }} />
+            </Group>
         </Group>
-        <Group>
-            <SegmentedControl defaultValue={deleted} value={deleted} data={[
-                { label: 'Deleted', value: 'true' }
-            ]} onChange={(value) => {
-                useFilterDeletedParam.setState({ value: value ? true : null } as any)
-            }} onClick={(event) => {
-                const value = (event.target as any)?.value;
-                if (qDeleted) {
-                    useFilterDeletedParam.setState({ value: null } as any)
-                }
-            }} />
-        </Group>
-    </Group>
+    </>
 }
 
 
@@ -131,6 +138,7 @@ function LoginForm() {
     }
 
     return <>
+
         <PasswordInput label="Password" placeholder='Enter Password' data-autoFocus
             value={password} onChange={(event) => setPassword(event.target.value)}
             visibilityToggleIcon={({ reveal, size }) => (
@@ -141,6 +149,7 @@ function LoginForm() {
                     submit();
                 }
             }} />
+
         <Button fullWidth mt='md' onClick={() => submit()}>Login</Button>
     </>
 }
