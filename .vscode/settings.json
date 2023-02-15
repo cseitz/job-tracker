@@ -54,4 +54,5 @@
         "**/build": true,
         "**/dist": true,
     },
+    "dotenv.enableAutocloaking": true,
 }

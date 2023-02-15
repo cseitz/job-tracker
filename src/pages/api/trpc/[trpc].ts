@@ -24,6 +24,9 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         if (!('jobAuth' in req.cookies) || req.cookies['jobAuth'] !== process.env.SECRET) {
             // @ts-ignore
             req.reject = true;
+            if ('jobAuth' in req.cookies) {
+                res.setHeader('Set-Cookie', 'jobAuth=wrong; Path=/; Expires=Wed, 21 Oct 1970 07:28:00 GMT');
+            }
         }
     }
     return trpc(req, res);
